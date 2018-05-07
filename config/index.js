@@ -29,13 +29,21 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/users/*': {
-        target: 'http://127.0.0.1:3333'  // 请求本地 需要clone node-api项目
-         //target: 'http://mall.yucccc.com:3333' // 请求线上 可直接运行
+        // target: 'http://127.0.0.1:3333'  // 请求本地 需要clone node-api项目
+         // target: 'http://mall.yucccc.com:3333' // 请求线上 可直接运行
+        target: 'http://xiyoubuy.cn:8901/api-products'
       },
       '/goods/*': {
-        target: 'http://127.0.0.1:3333'
+       // target: 'http://127.0.0.1:3333'
         // target: 'http://mall.yucccc.com:3333'
+        target: 'http://xiyoubuy.cn:8901/api-products'
       },
+      '/products/*': {
+        target: 'http://xiyoubuy.cn:8901/api-products'
+      },
+      '/accounts/*': {
+        target: 'http://xiyoubuy.cn:8901/api-accounts'
+      }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README

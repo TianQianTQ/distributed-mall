@@ -5,7 +5,7 @@
         <div class="w-box">
           <div class="nav-logo">
             <h1>
-              <router-link to="/" title="锤子科技官网">Smartisan</router-link>
+              <router-link to="/" title="旧物志">Smartisan</router-link>
             </h1>
           </div>
           <div class="right-box">
@@ -110,6 +110,15 @@
               <ul class="nav-list">
                 <li>
                   <router-link to="/">首页</router-link>
+                </li>
+                <li>
+                  <router-link to="/goods">全部商品</router-link>
+                </li>
+                <li>
+                  <router-link to="/goods">全部商品</router-link>
+                </li>
+                <li>
+                  <router-link to="/goods">全部商品</router-link>
                 </li>
                 <li>
                   <router-link to="/goods">全部商品</router-link>
@@ -356,7 +365,8 @@
       display: flex;
       align-items: center;
       > a {
-        background: url(/static/images/global-logo-red@2x.png) no-repeat 50%;
+        /*background: url(/static/images/global-logo-red@2x.png) no-repeat 50%;*/
+        background:url(/static/img/favicon.png);
         background-size: cover;
         display: block;
         @include wh(50px, 40px);

@@ -1,7 +1,7 @@
 import http from './public'
 // 登陆
 export const userLogin = (params) => {
-  return http.fetchPost('/users/login', params)
+  return http.fetchPost('/accounts/login', params)
 }
 // 退出登陆
 export const loginOut = (params) => {
@@ -25,6 +25,6 @@ export const updateheadimage = (params) => {
 }
 // 首页接口
 export const productHome = (params) => {
-  return http.fetchGet('/goods/productHome', params)
+  return http.fetchGet('/products/home', params)
 }
 

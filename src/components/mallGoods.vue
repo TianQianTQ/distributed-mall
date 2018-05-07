@@ -2,12 +2,12 @@
   <div class="good-item">
     <div>
       <div class="good-img">
-        <router-link :to="'goodsDetails?productId='+msg.productId">
-          <img v-lazy="msg.productImageBig" :alt="msg.productName">
-        </router-link>
+        <!--<router-link :to="'goodsDetails?productId='+msg.productId">-->
+          <img v-lazy="msg.images[0].url" :alt="msg.productName">
+        <!--</router-link>-->
       </div>
-      <h6 class="good-title">{{msg.productName}}</h6>
-      <h3 class="sub-title ellipsis">{{msg.sub_title}}</h3>
+      <h6 class="good-title">{{msg.title}}</h6>
+      <h3 class="sub-title ellipsis">{{msg.productName}}</h3>
       <div class="good-price pr">
         <div class="ds pa">
           <router-link :to="'goodsDetails?productId='+msg.productId">
@@ -20,7 +20,7 @@
           ></y-button>
         </div>
         <p><span style="font-size: 16px">￥</span>
-          {{msg.salePrice}}</p>
+          {{msg.price}}</p>
       </div>
     </div>
   </div>

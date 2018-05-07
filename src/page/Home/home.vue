@@ -7,25 +7,21 @@
            @mouseout="bgOut($refs.bg)">
         <span class="img a"></span>
         <span class="text b">以傲慢与偏执<br/>回敬傲慢与偏见</span>
-        <span class="copyright c">code by qingjin.me | picture from t.tt</span>
       </div>
     </div>
 
 
-    <section class="w mt30 clearfix">
-      <y-shelf title="热门商品">
-        <div slot="content" class="hot">
-          <mall-goods :msg="item" v-for="(item,i) in hot" :key="i"></mall-goods>
-        </div>
-      </y-shelf>
-    </section>
-    <section class="w mt30 clearfix" v-for="(item,i) in floors" :key="i">
-      <y-shelf :title="item.title">
+    <!--<section class="w mt30 clearfix">-->
+      <!--<y-shelf title="热门商品">-->
+        <!--<div slot="content" class="hot">-->
+          <!--<mall-goods :msg="item" v-for="(item,i) in hot" :key="i"></mall-goods>-->
+        <!--</div>-->
+      <!--</y-shelf>-->
+    <!--</section>-->
+    <section class="w mt30 clearfix" v-for="(item,i) in productCategories" :key="i">
+      <y-shelf :title="item.categoryName">
         <div slot="content" class="floors">
-          <div class="imgbanner">
-            <img v-lazy="floors[i].image.image" :alt="item.title">
-          </div>
-          <mall-goods :msg="tab" v-for="(tab,i) in item.tabs" :key="i"></mall-goods>
+          <mall-goods :msg="tab" v-for="(tab,i) in item.products" :key="i"></mall-goods>
         </div>
       </y-shelf>
     </section>
@@ -34,7 +30,6 @@
 <script>
   import { productHome } from '/api'
   import YShelf from '/components/shelf'
-  import product from '/components/product'
   import mallGoods from '/components/mallGoods'
   export default {
     data () {
@@ -47,7 +42,8 @@
           offsetHeight: 0
         },
         floors: [],
-        hot: []
+        hot: [],
+        productCategories: []
       }
     },
     methods: {
@@ -87,14 +83,16 @@
     },
     mounted () {
       productHome().then(res => {
-        const { home_floors, home_hot } = res.result
-        this.floors = home_floors
-        this.hot = home_hot
+        // let { productCategories } = res.roductCategories
+        // const { home_floors, home_hot } = res.result
+        // this.floors = home_floors
+        // this.hot = home_hot
+        this.productCategories = res.data.productCategories
+        console.log(res)
       })
     },
     components: {
       YShelf,
-      product,
       mallGoods
     }
   }

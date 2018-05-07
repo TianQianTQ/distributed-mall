@@ -3,22 +3,23 @@
     <div class="wrapper">
       <div class="dialog dialog-shadow" style="display: block; margin-top: -362px;">
         <div class="title" v-if="loginPage">
-          <h4>使用 Smartisan ID 登录官网</h4></div>
+          <img src="/static/img/logo.png">
+          <span>旧物志</span>
+        </div>
         <div v-if="loginPage" class="content">
           <ul class="common-form">
             <li class="username border-1p">
               <div class="input">
-                <input type="text" v-model="ruleForm.userName" placeholder="账号">
+                <input type="text" v-model="ruleForm.mobile" placeholder="账号">
               </div>
             </li>
             <li>
               <div class="input">
-                <input type="password" v-model="ruleForm.userPwd" @keyup.enter="login" placeholder="密码">
+                <input type="password" v-model="ruleForm.password" @keyup.enter="login" placeholder="密码">
               </div>
             </li>
             <li style="text-align: right" class="pr">
-              <span class="pa" style="top: 0;left: 0;color: #d44d44">{{ruleForm.errMsg}}</span>
-              <a href="javascript:;" style="padding: 0 5px" @click="loginPage = false">注册 Smartisan ID</a>
+              <a href="javascript:;" style="padding: 0 5px" @click="loginPage = false">注册 </a>
             </li>
           </ul>
           <!--登陆-->
@@ -72,17 +73,17 @@
   import YFooter from '/common/footer'
   import YButton from '/components/YButton'
   import { userLogin, register } from '/api/index'
-  import { addCartBatch } from '/api/goods'
-  import { getStore, removeStore } from '/utils/storage'
+  // import { addCartBatch } from '/api/goods'
+  import { getStore } from '/utils/storage'
 
   export default {
     data () {
       return {
         cart: [],
-        loginPage: true,
+        loginPage: true,     // 登录页面
         ruleForm: {
-          userName: '',
-          userPwd: '',
+          mobile: '',
+          password: '',
           errMsg: ''
         },
         registered: {
@@ -96,12 +97,12 @@
     computed: {
       // 可点击注册
       isRegOk (rules) {
-        const {userPwd, userPwd2, userName} = this.registered
-        return userPwd && userPwd2 && userName ? 'main-btn' : 'disabled-btn'
+        const {password, userPwd2, mobile} = this.registered
+        return password && userPwd2 && mobile ? 'main-btn' : 'disabled-btn'
       },
       isLoginOk () {
-        const {userPwd, userName} = this.ruleForm
-        return userPwd && userName ? 'main-btn' : 'disabled-btn'
+        const {password, mobile} = this.ruleForm
+        return password && mobile ? 'main-btn' : 'disabled-btn'
       }
     },
     methods: {
@@ -120,22 +121,14 @@
         this.cart = cartArr
       },
       login () {
-        const {userName, userPwd} = this.ruleForm
-        if (!userName || !userPwd) {
+        const {mobile, password} = this.ruleForm
+        if (!mobile || !password) {
           this.ruleForm.errMsg = '账号或者密码不能为空!'
         } else {
-          let params = {userName, userPwd}
+          let params = {mobile, password}
           userLogin(params).then(res => {
-            if (res.status === '0') {
-              if (this.cart.length) {
-                addCartBatch({productMsg: this.cart}).then(res => {
-                  if (res.status === '1') {
-                    removeStore('buyCart')
-                  }
-                }).then(this.$router.go(-1))
-              } else {
-                this.$router.go(-1)
-              }
+            if (res.code === '0') {
+              this.$router.go(-1)
             } else {
               this.ruleForm.errMsg = res.msg
             }
@@ -221,31 +214,27 @@
     margin-left: -225px;
     position: absolute;
     .title {
-      background: linear-gradient(#fff, #f5f5f5);
+      /*background: linear-gradient(#fff, #f5f5f5);*/
+      text-align:center;
+      font-size:24px;
+      line-height:92px;
+      font-family: "Microsoft YaHei";
+      color: #333;
+      font-weight: 400;
       overflow: visible;
       position: relative;
-      background-image: url(/static/images/smartisan_4ada7fecea.png);
-      background-size: 160px;
+      /*background-image: url(/static/img/favicon.png);               !* 旧物志的图标*!*/
+      /*background-size: 160px;*/
       background-position: top center;
       background-repeat: no-repeat;
       height: 92px;
-      margin: 23px 0 50px;
-      padding: 75px 0 0;
+      /*margin: 23px 0 50px;*/
+      /*padding: 75px 0 0;*/
       box-shadow: none;
-      h4 {
-        padding: 0;
-        text-align: center;
-        border-bottom: 1px solid #dcdcdc;
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        margin: 0;
-        border-bottom: 0;
-        box-shadow: none;
-        line-height: 1em;
-        height: auto;
-        color: #333;
-        font-weight: 400;
+      img{
+        width:50px;
+        margin-top:20px;
+        margin-right:20px;
       }
     }
     .content {
