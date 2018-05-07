@@ -43,7 +43,7 @@ module.exports = {
       },
       '/accounts/*': {
         target: 'http://xiyoubuy.cn:8901/api-accounts'
-      }
+      },
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README

@@ -28,26 +28,34 @@
           </div>
         </div>
         <div class="registered" v-else>
-          <h4>注册 Smartisan ID</h4>
+          <h4>注册</h4>
           <div class="content" style="margin-top: 20px;">
             <ul class="common-form">
               <li class="username border-1p">
                 <div class="input">
                   <input type="text"
-                         v-model="registered.userName" placeholder="账号"
-                         @keyup="registered.userName = registered.userName.replace(/[^\w\.\/]/ig,'')">
+                         v-model="registered.username" placeholder="用户名">
+                </div>
+              </li>
+              <li class="username border-1p">
+                <div class="input">
+                  <input type="text"
+                         v-model="registered.mobile" placeholder="手机号">
                 </div>
               </li>
               <li>
                 <div class="input">
                   <input type="password"
-                         v-model="registered.userPwd"
+                         v-model="registered.password"
                          placeholder="密码">
                 </div>
               </li>
               <li>
-                <div class="input">
-                  <input type="password" v-model="registered.userPwd2" placeholder="重复密码">
+                <div class="input " id="get-captcha">
+                  <input type="number" v-model="registered.captcha" placeholder="验证码">
+                  <button @click="getSmsCode" class="getMesCodeButton">
+                    <count-down class="getMesCode" text="发送验证码" algin="'right'" :during="59" :active.sync="timmer" format="S 秒后重新发送" @change="timmerChange"></count-down>
+                  </button>
                 </div>
               </li>
             </ul>
@@ -57,7 +65,7 @@
             <ul class="common-form pr">
               <li class="pa" style="left: 0;top: 0;margin: 0;color: #d44d44">{{registered.errMsg}}</li>
               <li style="text-align: center;line-height: 48px;margin-bottom: 0;">
-                <span>如果您已拥有 Smartisan ID，则可在此</span>
+                <span>如果您已拥有账号，则可在此</span>
                 <a href="javascript:;"
                    style="margin: 0 5px"
                    @click="loginPage = true">登陆</a>
@@ -72,7 +80,8 @@
 <script>
   import YFooter from '/common/footer'
   import YButton from '/components/YButton'
-  import { userLogin, register } from '/api/index'
+  import countDown from '/components/countDown'
+  import { userLogin, register, getSmsCode } from '/api/index'
   // import { addCartBatch } from '/api/goods'
   import { getStore } from '/utils/storage'
 
@@ -87,18 +96,21 @@
           errMsg: ''
         },
         registered: {
-          userName: '',
-          userPwd: '',
-          userPwd2: '',
-          errMsg: ''
-        }
+          username: '',
+          mobile: '',
+          password: '',
+          captcha: '',
+          errMsg: '',
+          uuid: ''
+        },
+        timmer: false   // 获取验证码时间
       }
     },
     computed: {
       // 可点击注册
       isRegOk (rules) {
-        const {password, userPwd2, mobile} = this.registered
-        return password && userPwd2 && mobile ? 'main-btn' : 'disabled-btn'
+        const {password, username, mobile, captcha} = this.registered
+        return password && username && mobile && captcha ? 'main-btn' : 'disabled-btn'
       },
       isLoginOk () {
         const {password, mobile} = this.ruleForm
@@ -135,19 +147,16 @@
           })
         }
       },
-      regist () {
-        const {userName, userPwd, userPwd2} = this.registered
-        if (!userName || !userPwd || !userPwd2) {
-          this.registered.errMsg = '账号密码不能为空'
+      regist(){
+        const {username, password, mobile, captcha, uuid} = this.registered
+        if (!username || !password || !mobile || !captcha) {
+          this.registered.errMsg = '请填写完整信息'
           return false
         }
-        if (userPwd2 !== userPwd) {
-          this.registered.errMsg = '两次输入的密码不相同'
-          return false
-        }
-        register({userName, userPwd}).then(res => {
-          this.registered.errMsg = res.msg
-          if (res.status === '0') {
+        register({username, password, mobile, captcha, uuid}).then(res => {
+          // this.registered.errMsg = res.msg
+          if (res.code === 0) {
+            console.log('注册成功')
             setTimeout(() => {
               this.ruleForm.errMsg = ''
               this.registered.errMsg = ''
@@ -157,6 +166,25 @@
             return false
           }
         })
+      },
+      getSmsCode () {
+        if (this.timmer) {
+          return false
+        }
+        const obj = {
+          mobile: this.registered.mobile
+        }
+        getSmsCode({params: obj}).then(res => {
+          if (res.code === 0) {
+            this.registered.uuid = res.data.uuid
+            console.log(this.registered.uuid)
+            this.timmer = true
+          }
+        })
+        this.timmer = true
+      },
+      timmerChange (val) { // 发送验证码数字变化---
+        this.timmer = val
       }
     },
     mounted () {
@@ -164,7 +192,8 @@
     },
     components: {
       YFooter,
-      YButton
+      YButton,
+      countDown
     }
   }
 </script>
@@ -223,13 +252,9 @@
       font-weight: 400;
       overflow: visible;
       position: relative;
-      /*background-image: url(/static/img/favicon.png);               !* 旧物志的图标*!*/
-      /*background-size: 160px;*/
       background-position: top center;
       background-repeat: no-repeat;
       height: 92px;
-      /*margin: 23px 0 50px;*/
-      /*padding: 75px 0 0;*/
       box-shadow: none;
       img{
         width:50px;
@@ -306,5 +331,22 @@
       line-height: 60px;
     }
   }
+  #get-captcha input {
+    width:60%;
+  }
+  .getMesCodeButton{
+    margin-left:15px;
+    background:none;
+    color:#5079d9;
+    border:1px solid #ccc;
+    width:129px;
+    height:45px;
+    border-radius:6px;
+  }
+  .getMesCodeButton:hover{
+    border:1px solid #B0C4DE;
+    background:#F8F8FF;
+  }
+
 
 </style>

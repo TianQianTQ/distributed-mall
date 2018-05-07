@@ -13,7 +13,11 @@ export const userInfo = (params) => {
 }
 // 注册账号
 export const register = (params) => {
-  return http.fetchPost('/users/register', params)
+  return http.fetchPost('/accounts/register', params)
+}
+// 获取验证码
+export const getSmsCode = (params) => {
+  return http.fetchGet('/accounts/send-captcha', params)
 }
 // 上传图片
 export const upload = (params) => {
