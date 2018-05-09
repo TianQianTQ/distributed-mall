@@ -3,7 +3,7 @@
     <y-shelf title="收货地址">
       <span slot="right"><y-button text="添加收货地址" style="margin: 0" @btnClick="update()"></y-button></span>
       <div slot="content">
-        <div v-if="addList.length">
+        <div v-if="addList.length" v-loading="loading">
           <div class="address-item" v-for="(item,i) in addList" :key="i">
             <div class="name">{{item.consignee}}</div>
             <div class="address-msg">{{item.address}}</div>
@@ -16,7 +16,7 @@
             </div>
             <div class="operation">
               <a href="javascript:;" @click="update(item)">修改</a>
-              <a href="javascript:;" :data-id="item.addressId" @click="del(item.addressId,i)">删除</a>
+              <a href="javascript:;" :data-id="item.addressId" @click="del(item,i)">删除</a>
             </div>
           </div>
         </div>
@@ -50,27 +50,6 @@
         <el-button type="primary" @click="save({addressId:msg.addressId,consignee:msg.userName,mobile:msg.tel,address:msg.streetName,isDefault:msg.isDefault,city:0})">确 定</el-button>
       </div>
     </el-dialog>
-    <!--<y-popup :open="popupOpen" @close='popupOpen=false' :title="popupTitle">-->
-      <!--<div slot="content" class="md" :data-id="msg.addressId">-->
-        <!--<div>-->
-          <!--<input type="text" placeholder="收货人姓名" v-model="msg.userName">-->
-        <!--</div>-->
-        <!--<div>-->
-          <!--<input type="number" placeholder="手机号码" v-model="msg.tel">-->
-        <!--</div>-->
-        <!--<div>-->
-          <!--<input type="text" placeholder="收货地址" v-model="msg.streetName">-->
-        <!--</div>-->
-        <!--<div>-->
-          <!--<span><input type="checkbox" v-model="msg.isDefault" style="margin-right: 5px;">设为默认</span>-->
-        <!--</div>-->
-        <!--<y-button text='保存'-->
-                  <!--class="btn"-->
-                  <!--:classStyle="btnHighlight?'main-btn':'disabled-btn'"-->
-                  <!--@btnClick="save({addressId:msg.addressId,userName:msg.userName,tel:msg.tel,streetName:msg.streetName,isDefault:msg.isDefault})">-->
-        <!--</y-button>-->
-      <!--</div>-->
-    <!--</y-popup>-->
   </div>
 </template>
 <script>
@@ -90,7 +69,8 @@
           tel: '',
           streetName: '',
           isDefault: false
-        }
+        },
+        loading: false
       }
     },
     computed: {
@@ -102,6 +82,7 @@
     methods: {
       // 获取列表
       _addressList () {
+        this.loading = true
         addressList().then(res => {
           if(res.code === 0) {
             let data = res.data
@@ -117,6 +98,7 @@
               type: 'warning'
             });
           }
+          this.loading = false
         })
       },
       // 修改收货地址
@@ -174,8 +156,11 @@
         this.popupOpen = false
       },
       // 删除地址
-      del (addressId, i) {
-        addressDel({addressId}).then(res => {
+      del (item, i) {
+        let obj={
+          addressId:item.addressId
+        }
+        addressDel({params:obj}).then(res => {
           if (res.code === 0) {
             this.addList.splice(i, 1)
           } else {
@@ -205,10 +190,6 @@
           this.msg.addressId = ''
         }
       },
-      // // 添加地址
-      // goFormAddress(p){
-      //
-      // }
     },
     created () {
       this._addressList()

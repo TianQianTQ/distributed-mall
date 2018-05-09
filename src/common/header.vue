@@ -108,11 +108,11 @@
           <div class="nav-sub-wrapper" :class="{fixed:st}">
             <div class="w">
               <ul class="nav-list">
-                <li>
+                <li class="nav-list-sub">
                   <router-link to="/">首页</router-link>
                 </li>
                 <li v-for="(item,index) in categoryName" :key="index">
-                  <router-link :to="{path:'/goods',query: {item:index}}">{{item}}</router-link>
+                  <router-link :to="{path:'/goods',query: {item:item.productCategoryId}}">{{item.categoryName}}</router-link>
                 </li>
               </ul>
             </div>
@@ -161,7 +161,9 @@
         cartShow: false,
         timerCartShow: null,  // 定时隐藏购物车
         categoryName: [
-          '全部商品',
+          { categoryName: "全部",
+            productCategoryId: 0,
+          },
         ],
       }
     },
@@ -263,10 +265,13 @@
       category().then(res => {
         if (res.code === 0) {
           let list = [];
+          let number = [];
           res.data.forEach(function(val,index,arr){
-            list[index] = arr[index].categoryName
+            list[index] = arr[index]
           })
           this.categoryName = this.categoryName.concat(list)
+          console.log(this.categoryName);
+          // this.productCategoryId = this.categoryName.concat(number)
         }
         // 重新初始化一次本地数据
       })
@@ -400,9 +405,28 @@
         display: block;
         font-size: 14px;
         padding: 0 25px;
-        &:hover {
-          color: #fff;
-        }
+      }
+      a:hover {
+        color: #fff;
+      }
+      a:active {
+        color: #fff;
+        font-size: 15px;
+      }
+    }
+    .nav-list-sub{
+      a{
+        color: #c8c8c8!important;
+        display: block;
+        font-size: 14px;
+        padding: 0 25px;
+      }
+      a:hover {
+        color: #fff;
+      }
+      a:active {
+        color: #fff;
+        font-size: 15px;
       }
     }
     .nav-aside {
