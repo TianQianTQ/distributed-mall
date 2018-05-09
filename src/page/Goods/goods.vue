@@ -17,25 +17,27 @@
 
     <!--商品-->
     <div class="goods-box w">
-      <mall-goods v-for="(item,i) in computer" :key="i" :msg="item"></mall-goods>
+      <mall-goods v-for="(item,i) in goods" :key="i" :msg="item"></mall-goods>
     </div>
     <div v-show="!busy"
          class="w load-more"
          v-infinite-scroll="loadMore"
          infinite-scroll-disabled="busy"
-         infinite-scroll-distance="100">
-      正在加载中...
+         infinite-scroll-distance="10">
+         正在加载中。。。
     </div>
   </div>
 </template>
 <script>
-  import {getComputer} from '/api/goods.js'
+  import { getProductsList } from '/api/goods'
   import mallGoods from '/components/mallGoods'
   import YButton from '/components/YButton'
+  // import {getUrlParam} from '/utils/utils'
+  import * as utils from '/utils/utils'
   export default {
     data () {
       return {
-        computer: [],
+        goods: [],
         min: '',
         max: '',
         busy: false,
@@ -46,30 +48,62 @@
         params: {
           page: 1,
           sort: ''
-        }
+        },
+        loading: false,
+        nextPages: true,   // 最大页限制
+        productCategoryId: utils.getItem()
       }
     },
     methods: {
-      _getComputer (flag) {
+      _getProductsList (flag) {
+        this.productCategoryId = utils.getItem()
         let params = {
-          params: {
-            page: this.params.page,
+          pageNo: this.params.page,
             sort: this.params.sort,
-            priceGt: this.min,
-            priceLte: this.max
-          }
+          minPrice: this.min,
+          maxPrice: this.max,
+          productCategoryId: this.productCategoryId,
+          pageSize: 2
         }
-        getComputer(params).then(res => {
-          if (res.result.count) {
-            let data = res.result.data
-            if (flag) {
-              this.computer = this.computer.concat(data)
-            } else {
-              this.computer = data
+        getProductsList(params).then(res => {
+          if(res.code === 0 ) {
+            this.nextPages = res.data.hasNextPage
+            let data = res.data.list
+            // this.pages = res.data.pages
+            // if (res.data.list.length !== 0) {
+            //   this.loading = false
+            //   let data = res.data.list
+            //   if (flag) {
+            //     // 加载
+            //     this.goods = this.goods.concat(data)
+            //     this.busy = false
+            //   } else {
+            //     // 第一次加载
+            //     this.goods = data
+            //     this.busy = false
+            //   }
+            // } else {
+            //   clearTimeout(this.timer)
+            //   this.busy = true
+            // }
+            if(flag){
+              console.log('不是第一次请求数据');
+              this.goods = this.goods.concat(data)
+              if(res.data.list.length == 0){
+                this.busy = true;
+              }else{
+                this.busy = false;
+              }
+            }else{
+              console.log('第一次请求数据');
+              this.goods = data
+              this.busy = false;
             }
-          } else {
-            clearTimeout(this.timer)
-            this.busy = true
+          }else{
+            this.$message({
+              message: res.msg,
+              type: 'warning'
+            });
           }
         })
       },
@@ -79,7 +113,7 @@
         this.params.sort = ''
         this.params.page = 1
         this.busy = false
-        this._getComputer()
+        this._getProductsList()
       },
       // 价格排序
       sort (v) {
@@ -87,24 +121,39 @@
         this.params.sort = v
         this.params.page = 1
         this.busy = false
-        this._getComputer()
+        this._getProductsList()
       },
       // 加载更多
       loadMore () {
         this.busy = true
         this.timer = setTimeout(() => {
-          this.params.page++
-          this._getComputer(true)
-          this.busy = false
-        }, 500)
+          // const page = this.params.page++
+          // if(page > this.pages){
+          //   return
+          // }
+          console.log('dff'+this.nextPages);
+          if(this.nextPages){
+            this._getProductsList(true)
+          }else{
+            // this.busy = false
+          }
+          // conosle.log(page);
+
+        }, 1000)
       }
     },
     created () {
-      this._getComputer()
+       this._getProductsList()
+      console.log(this.productCategoryId )
     },
     mounted () {
       this.windowHeight = window.innerHeight
       this.windowWidth = window.innerWidth
+      // this._getProductsList()
+      console.log('dayin'+this.productCategoryId )
+    },
+    watch:{
+      "$route": "_getProductsList"
     },
     components: {
       mallGoods,

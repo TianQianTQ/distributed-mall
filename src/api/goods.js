@@ -1,7 +1,7 @@
 import http from './public'
 // 商品列表--
-export const getComputer = (params) => {
-  return http.fetchGet('/goods/computer', params)
+export const getProductsList = (params) => {
+  return http.fetchPost('/products/list', params)
 }
 // 获取购物车列表
 export const getCartList = (params) => {

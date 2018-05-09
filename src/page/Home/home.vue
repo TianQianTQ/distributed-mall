@@ -84,19 +84,11 @@
     },
     mounted () {
       productHome().then(res => {
-        // let { productCategories } = res.roductCategories
-        // const { home_floors, home_hot } = res.result
-        // this.floors = home_floors
-        // this.hot = home_hot
         this.productCategories = res.data.productCategories
         let categoryName = [];
         res.data.productCategories.forEach(function(val,index,arr){
           categoryName[index] = arr[index].categoryName
         })
-        // //categoryName = res.data.productCategories[0].categoryName
-        // console.log(categoryName)
-        // setStore('categoryName', categoryName)
-        // console.log(res)
       })
     },
     components: {
