@@ -125,7 +125,7 @@
 <script>
   import YButton from '/components/YButton'
   import { mapMutations, mapState } from 'vuex'
-  import { getCartList, cartDel } from '/api/goods'
+  // import { getCartList, cartDel } from '/api/goods'
   import { loginOut, category } from '/api/index'
   import { setStore, removeStore, getStore } from '/utils/storage'
 
@@ -196,22 +196,12 @@
       },
       // 登陆时获取一次购物车商品
       _getCartList () {
-        getCartList().then(res => {
-          if (res.status === '1') {
-            setStore('buyCart', res.result)
-          }
-          // 重新初始化一次本地数据
-        }).then(this.INIT_BUYCART)
+        this.INIT_BUYCART
+        this.$message('获取购物车商品');
       },
       // 删除商品
       delGoods (productId) {
-        if (this.login) { // 登陆了
-          cartDel({productId}).then(res => {
-            this.EDIT_CART({productId})
-          })
-        } else {
           this.EDIT_CART({productId})
-        }
       },
       toCart () {
         this.$router.push({path: '/cart'})

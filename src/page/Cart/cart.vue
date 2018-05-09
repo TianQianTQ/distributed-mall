@@ -114,7 +114,8 @@
   </div>
 </template>
 <script>
-  import { cartEdit, editCheckAll, cartDel } from '/api/goods'
+  // import { cartEdit, editCheckAll, cartDel } from '/api/goods'
+  // import { editCheckAll } from '/api/goods'
   import { mapMutations, mapState } from 'vuex'
   import YButton from '/components/YButton'
   import YHeader from '/common/header'
@@ -176,20 +177,10 @@
       // 全选
       editCheckAll () {
         let checkAll = !this.checkAllFlag
-        editCheckAll({checkAll: checkAll}).then(res => {
           this.EDIT_CART({checked: checkAll})
-        })
       },
       // 修改购物车
       _cartEdit (productId, productNum, checked) {
-        cartEdit(
-          {
-            productId,
-            productNum,
-            checked
-          }
-        ).then(res => {
-          if (res.status === '0') {
             this.EDIT_CART(
               {
                 productId,
@@ -197,8 +188,6 @@
                 productNum
               }
             )
-          }
-        })
       },
       // 修改购物车
       editCart (type, item) {
@@ -220,9 +209,7 @@
       },
       // 删除整条购物车
       cartdel (productId) {
-        cartDel({productId}).then(res => {
           this.EDIT_CART({productId})
-        })
       },
       checkout () {
         this.$router.push({path: 'checkout'})

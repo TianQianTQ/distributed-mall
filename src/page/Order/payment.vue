@@ -52,7 +52,7 @@
     </div>
     <!--商品-->
     <div class="confirm-goods-table">
-      <div class="cart-items" v-for="(item,i) in cartList" :key="i" v-if="item.checked === '1'">
+      <div class="cart-items" v-for="(item,i) in cartList1" :key="i" v-if="item.checked === '1'">
         <div class="name">
           <div class="name-cell ellipsis">
             <a href="javascript:;" title=""
@@ -81,17 +81,18 @@
       return {
         payType: 1,
         addList: {},
-        cartList: [],
+        cartList1: [],
         addressId: 0,
         productId: '',
         num: ''
       }
     },
     computed: {
+      ...mapState(['cartList']),
       // 选中的总价格
       checkPrice () {
         let totalPrice = 0
-        this.cartList && this.cartList.forEach(item => {
+        this.cartList1 && this.cartList1.forEach(item => {
           if (item.checked === '1') {
             totalPrice += (item.productNum * item.productPrice)
           }
@@ -101,9 +102,10 @@
     },
     methods: {
       _getCartList () {
-        getCartList().then(res => {
-          this.cartList = res.result
-        })
+        // getCartList().then(res => {
+        //   this.cartList = res.result
+        // })
+        this.cartList1 = this.cartList
       },
       _addressList (params) {
         addressList(params).then(res => {
@@ -130,7 +132,7 @@
           item.checked = '1'
           item.productNum = this.num
           item.productPrice = item.salePrice
-          this.cartList.push(item)
+          this.cartList1.push(item)
         })
       }
     },

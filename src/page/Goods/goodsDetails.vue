@@ -61,7 +61,7 @@
   </div>
 </template>
 <script>
-  import { productDet, addCart } from '/api/goods'
+  import { productDet,  } from '/api/goods'
   import { mapMutations, mapState } from 'vuex'
   import YShelf from '/components/shelf'
   import BuyNum from '/components/buynum'
@@ -92,18 +92,18 @@
       },
       addCart (id, price, name, img) {
         if (!this.showMoveImg) {     // 动画是否在运动
-          if (this.login) { // 登录了 直接存在用户名下
-            addCart({productId: id, productNum: this.productNum}).then(res => {
-              // 并不重新请求数据
-              this.ADD_CART({
-                productId: id,
-                productPrice: price,
-                productName: name,
-                productImg: img,
-                productNum: this.productNum
-              })
-            })
-          } else { // 未登录 vuex
+          // if (this.login) { // 登录了 直接存在用户名下
+          //   addCart({productId: id, productNum: this.productNum}).then(res => {
+          //     // 并不重新请求数据
+          //     this.ADD_CART({
+          //       productId: id,
+          //       productPrice: price,
+          //       productName: name,
+          //       productImg: img,
+          //       productNum: this.productNum
+          //     })
+          //   })
+          // } else { // 未登录 vuex
             this.ADD_CART({
               productId: id,
               productPrice: price,
@@ -111,7 +111,7 @@
               productImg: img,
               productNum: this.productNum
             })
-          }
+          // }
           // 加入购物车动画
           var dom = event.target
           // 获取点击的坐标

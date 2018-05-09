@@ -48,7 +48,7 @@
                 <span class="price">单价</span>
               </div>
               <!--列表-->
-              <div class="cart-table" v-for="(item,i) in cartList" :key="i" v-if="item.checked === '1'">
+              <div class="cart-table" v-for="(item,i) in cartList1" :key="i" v-if="item.checked === '1'">
                 <div class="cart-group divide pr" :data-productid="item.productId">
                   <div class="cart-top-items">
                     <div class="cart-items clearfix">
@@ -141,10 +141,11 @@
   import YPopup from '/components/popup'
   import YHeader from '/common/header'
   import YFooter from '/common/footer'
+  import { setStore, removeStore, getStore } from '/utils/storage'
   export default {
     data () {
       return {
-        cartList: [],
+        cartList1: [],
         addList: [],
         addressId: '1',
         popupOpen: false,
@@ -161,6 +162,9 @@
       }
     },
     computed: {
+      ...mapState([
+        'cartList'
+      ]),
       btnHighlight () {
         let msg = this.msg
         return msg.userName && msg.tel && msg.streetName
@@ -168,7 +172,7 @@
       // 选中的总价格
       checkPrice () {
         let totalPrice = 0
-        this.cartList && this.cartList.forEach(item => {
+        this.cartList1 && this.cartList1.forEach(item => {
           if (item.checked === '1') {
             totalPrice += (item.productNum * item.productPrice)
           }
@@ -178,9 +182,11 @@
     },
     methods: {
       _getCartList () {
-        getCartList().then(res => {
-          this.cartList = res.result
-        })
+        this.cartList1 = this.cartList
+        this.$message('获取购物车列表');
+        // getCartList().then(res => {
+        //   this.cartList = res.result
+        // })
       },
       _addressList () {
         addressList().then(res => {
@@ -264,7 +270,7 @@
           item.productImg = item.productImageBig
           item.productNum = this.num
           item.productPrice = item.salePrice
-          this.cartList.push(item)
+          this.cartList1.push(item)
         })
       }
     },
