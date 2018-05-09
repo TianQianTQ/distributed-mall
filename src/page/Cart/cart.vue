@@ -74,8 +74,8 @@
                   <div class="choose-all">
                     <span :class="{'checkbox-on':checkAllFlag}" class="blue-checkbox-new" @click="editCheckAll"></span>全选
                   </div>
-                  <div class="delete-choose-goods">删除选中的商品
-                  </div>
+                  <!--<div class="delete-choose-goods">删除选中的商品-->
+                  <!--</div>-->
                 </div>
               </div>
               <div class="shipping">
@@ -102,7 +102,7 @@
           </div>
           <p style="text-align: center;padding: 20px;color: #8d8d8d">你的购物车空空如也</p>
           <div style="text-align: center">
-            <router-link to="/goods">
+            <router-link to="/goods?item=0">
               <y-button text="现在选购" style="width: 150px;height: 40px;line-height: 38px;color: #8d8d8d"></y-button>
             </router-link>
           </div>
@@ -116,11 +116,11 @@
 <script>
   // import { cartEdit, editCheckAll, cartDel } from '/api/goods'
   // import { editCheckAll } from '/api/goods'
-  import { mapMutations, mapState } from 'vuex'
   import YButton from '/components/YButton'
   import YHeader from '/common/header'
   import YFooter from '/common/footer'
   import BuyNum from '/components/buynum'
+  import { mapMutations, mapState } from 'vuex'
   export default {
     data () {
       return {}

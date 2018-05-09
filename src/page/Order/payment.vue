@@ -38,9 +38,9 @@
     <div class="p-msg w">
       <div class="confirm-detail">
         <div class="info-title">收货信息</div>
-        <p class="info-detail">姓名：{{addList.userName}}</p>
-        <p class="info-detail">联系电话：{{addList.tel}}</p>
-        <p class="info-detail">详细地址：{{addList.streetName}}</p></div>
+        <p class="info-detail">姓名：{{addList.consignee}}</p>
+        <p class="info-detail">联系电话：{{addList.mobile}}</p>
+        <p class="info-detail">详细地址：{{addList.address}}</p></div>
     </div>
     <div class="confirm-table-title">
       <span class="name">商品信息</span>
@@ -76,6 +76,7 @@
   import YShelf from '/components/shelf'
   import YButton from '/components/YButton'
   import { addressList, getCartList, payMent, productDet } from '/api/goods'
+  import { mapMutations, mapState } from 'vuex'
   export default {
     data () {
       return {
@@ -108,8 +109,23 @@
         this.cartList1 = this.cartList
       },
       _addressList (params) {
-        addressList(params).then(res => {
-          this.addList = res.result
+        // addressList(params).then(res => {
+        //   this.addList = res.result
+        // })
+        addressList().then(res => {
+          if(res.code === 0) {
+            let data = res.data
+            if (data.length) {
+              this.addList = res.data
+            } else {
+              this.addList = []
+            }
+          }else{
+            this.$message({
+              message: res.msg,
+              type: 'warning'
+            });
+          }
         })
       },
       paySuc () {

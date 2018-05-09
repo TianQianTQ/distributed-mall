@@ -15,7 +15,7 @@
           </router-link>
           <y-button text="加入购物车"
                     style="margin: 0 5px"
-                    @btnClick="addCart(msg.productId,msg.salePrice,msg.productName,msg.productImageBig)"
+                    @btnClick="addCart(msg.productId,msg.price,msg.productName,msg.images[0].url)"
                     classStyle="main-btn"
           ></y-button>
         </div>

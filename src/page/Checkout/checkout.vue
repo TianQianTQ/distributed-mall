@@ -19,12 +19,12 @@
                </path>
              </svg>
              </span>
-              <p>收货人: {{item.userName}} {{item.isDefault ? '(默认地址)' : ''}}</p>
-              <p class="street-name ellipsis">收货地址: {{item.streetName}}</p>
-              <p>手机号码: {{item.tel}}</p>
+              <p>收货人: {{item.consignee}} {{item.isDefault ? '(默认地址)' : ''}}</p>
+              <p class="street-name ellipsis">收货地址: {{item.address}}</p>
+              <p>手机号码: {{item.mobile}}</p>
               <div class="operation-section">
                 <span class="update-btn" @click="update(item)">修改</span>
-                <span class="delete-btn" :data-id="item.addressId" @click="del(item.addressId)">删除</span>
+                <span class="delete-btn" :data-id="item.addressId" @click="del(item,i)">删除</span>
               </div>
             </li>
 
@@ -108,40 +108,41 @@
           </div>
         </div>
       </y-shelf>
-
-      <y-popup :open="popupOpen" @close='popupOpen=false' :title="popupTitle">
-        <div slot="content" class="md" :data-id="msg.addressId">
-          <div>
-            <input type="text" placeholder="收货人姓名" v-model="msg.userName">
-          </div>
-          <div>
-            <input type="number" placeholder="手机号码" v-model="msg.tel">
-          </div>
-          <div>
-            <input type="text" placeholder="收货地址" v-model="msg.streetName">
-          </div>
-          <div>
-            <span><input type="checkbox" v-model="msg.isDefault" style="margin-right: 5px;">设为默认</span>
-          </div>
-          <y-button text='保存'
-                    class="btn"
-                    :classStyle="btnHighlight?'main-btn':'disabled-btn'"
-                    @btnClick="save({addressId:msg.addressId,userName:msg.userName,tel:msg.tel,streetName:msg.streetName,isDefault:msg.isDefault})">
-          </y-button>
+      <el-dialog :title="popupTitle" :visible.sync="popupOpen" class="form-modify">
+        <el-form :model="msg" ref="msg" label-width="100px">
+          <el-form-item label="收货人姓名" >
+            <el-input type="text" v-model="msg.userName" ></el-input>
+          </el-form-item>
+          <el-form-item label="手机号码" >
+            <el-input type="number" v-model="msg.tel" ></el-input>
+          </el-form-item>
+          <el-form-item label="收货地址" >
+            <el-input type="text" v-model="msg.streetName" ></el-input>
+          </el-form-item>
+          <el-form-item label="设为默认">
+            <el-switch v-model="msg.isDefault"></el-switch>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <!--<el-button @click="popupOpen = false">取 消</el-button>-->
+          <el-button type="primary" :classStyle="btnHighlight?'main-btn':'disabled-btn'"
+                     @click="save({addressId:msg.addressId,consignee:msg.userName,mobile:msg.tel,address:msg.streetName,isDefault:msg.isDefault,city:0})">确 定</el-button>
         </div>
-      </y-popup>
+      </el-dialog>
     </div>
     <y-footer></y-footer>
   </div>
 </template>
 <script>
-  import { getCartList, addressList, addressUpdate, addressAdd, addressDel, productDet } from '/api/goods'
+  // import { getCartList, addressList, addressUpdate, addressAdd, addressDel, productDet } from '/api/goods'
+  import { addressList, addressUpdate, addressAdd, addressDel, productDet } from '/api/goods'
   import YShelf from '/components/shelf'
   import YButton from '/components/YButton'
   import YPopup from '/components/popup'
   import YHeader from '/common/header'
   import YFooter from '/common/footer'
   import { setStore, removeStore, getStore } from '/utils/storage'
+  import { mapMutations, mapState } from 'vuex'
   export default {
     data () {
       return {
@@ -184,20 +185,17 @@
       _getCartList () {
         this.cartList1 = this.cartList
         this.$message('获取购物车列表');
-        // getCartList().then(res => {
-        //   this.cartList = res.result
-        // })
       },
       _addressList () {
-        addressList().then(res => {
-          let data = res.result
-          if (data.length) {
-            this.addList = data
-            this.addressId = data[0].addressId || '1'
-          } else {
-            this.addList = []
-          }
-        })
+        addressList().then(
+          res => {
+            if (res.code === 0) {
+              this.addList = res.data
+              this.addressId = res.data[0].addressId || '1'
+            } else {
+              this.addList = []
+            }
+          })
       },
       _addressUpdate (params) {
         addressUpdate(params).then(res => {
@@ -209,9 +207,21 @@
           this._addressList()
         })
       },
-      _addressDel (params) {
+      _addressDel (params,i) {
         addressDel(params).then(res => {
-          this._addressList()
+          if (res.code === 0) {
+            this._addressList()
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            });
+            this.addList.splice(i, 1)
+          } else {
+            this.$message({
+              message: '删除失败',
+              type: 'warning'
+            });
+          }
         })
       },
       // 付款
@@ -251,17 +261,22 @@
       },
       // 保存
       save (p) {
+        p.isDefault=(p.isDefault === true ? 1: 0)
         if (p.addressId) {
           this._addressUpdate(p)
         } else {
           delete p.addressId
+          this.$message('添加');
           this._addressAdd(p)
         }
         this.popupOpen = false
       },
       // 删除
-      del (addressId) {
-        this._addressDel({addressId})
+      del (item, i) {
+        let obj={
+          addressId:item.addressId
+        }
+        this._addressDel({params:obj},i)
       },
       _productDet (productId) {
         productDet({params: {productId}}).then(res => {
@@ -600,6 +615,10 @@
     font-size: 12px;
     padding-top: 4px;
     line-height: 17px;
+  }
+  .form-modify{
+    width:70%;
+    margin:0 auto;
   }
 
 

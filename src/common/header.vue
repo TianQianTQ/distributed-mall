@@ -260,7 +260,7 @@
             list[index] = arr[index]
           })
           this.categoryName = this.categoryName.concat(list)
-          console.log(this.categoryName);
+          // console.log(this.categoryName);
           // this.productCategoryId = this.categoryName.concat(number)
         }
         // 重新初始化一次本地数据
