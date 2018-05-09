@@ -6,8 +6,9 @@
         <div class="account-sidebar">
           <div class="avatar gray-box ">
             <div>
-              <img :src="userInfo.info.avatar"> <h5>
-              {{userInfo.info.name}}</h5></div>
+              <img :src="userInfo.info.headImage">
+              <h5>{{userInfo.info.username}}</h5>
+            </div>
             <div class="box-inner">
               <ul class="account-nav">
                 <li v-for="(item,i) in nav" :key='i' :class="{current:item.name===title}"
@@ -118,9 +119,9 @@
           a {
             position: relative;
             z-index: 1;
-            height: 50px;
+            height: 48px;
             background-color: #98AFEE;
-            line-height: 50px;
+            line-height: 48px;
             color: #FFF;
           }
 

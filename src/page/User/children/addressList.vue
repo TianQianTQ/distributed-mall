@@ -5,9 +5,9 @@
       <div slot="content">
         <div v-if="addList.length">
           <div class="address-item" v-for="(item,i) in addList" :key="i">
-            <div class="name">{{item.userName}}</div>
-            <div class="address-msg">{{item.streetName}}</div>
-            <div class="telephone">{{item.tel}}</div>
+            <div class="name">{{item.consignee}}</div>
+            <div class="address-msg">{{item.address}}</div>
+            <div class="telephone">{{item.mobile}}</div>
             <div class="defalut">
               <a @click="changeDef(item)"
                  href="javascript:;"
@@ -30,27 +30,47 @@
         </div>
       </div>
     </y-shelf>
-    <y-popup :open="popupOpen" @close='popupOpen=false' :title="popupTitle">
-      <div slot="content" class="md" :data-id="msg.addressId">
-        <div>
-          <input type="text" placeholder="收货人姓名" v-model="msg.userName">
-        </div>
-        <div>
-          <input type="number" placeholder="手机号码" v-model="msg.tel">
-        </div>
-        <div>
-          <input type="text" placeholder="收货地址" v-model="msg.streetName">
-        </div>
-        <div>
-          <span><input type="checkbox" v-model="msg.isDefault" style="margin-right: 5px;">设为默认</span>
-        </div>
-        <y-button text='保存'
-                  class="btn"
-                  :classStyle="btnHighlight?'main-btn':'disabled-btn'"
-                  @btnClick="save({addressId:msg.addressId,userName:msg.userName,tel:msg.tel,streetName:msg.streetName,isDefault:msg.isDefault})">
-        </y-button>
+    <el-dialog title="商品信息" :visible.sync="popupOpen" class="form-modify">
+      <el-form :model="msg" ref="msg" label-width="100px">
+        <el-form-item label="收货人姓名" >
+          <el-input type="text" v-model="msg.userName" ></el-input>
+        </el-form-item>
+        <el-form-item label="手机号码" >
+          <el-input type="number" v-model="msg.tel" ></el-input>
+        </el-form-item>
+        <el-form-item label="收货地址" >
+          <el-input type="text" v-model="msg.streetName" ></el-input>
+        </el-form-item>
+        <el-form-item label="设为默认">
+          <el-switch v-model="msg.isDefault"></el-switch>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="popupOpen = false">取 消</el-button>
+        <el-button type="primary" @click="save({addressId:msg.addressId,consignee:msg.userName,mobile:msg.tel,address:msg.streetName,isDefault:msg.isDefault,city:0})">确 定</el-button>
       </div>
-    </y-popup>
+    </el-dialog>
+    <!--<y-popup :open="popupOpen" @close='popupOpen=false' :title="popupTitle">-->
+      <!--<div slot="content" class="md" :data-id="msg.addressId">-->
+        <!--<div>-->
+          <!--<input type="text" placeholder="收货人姓名" v-model="msg.userName">-->
+        <!--</div>-->
+        <!--<div>-->
+          <!--<input type="number" placeholder="手机号码" v-model="msg.tel">-->
+        <!--</div>-->
+        <!--<div>-->
+          <!--<input type="text" placeholder="收货地址" v-model="msg.streetName">-->
+        <!--</div>-->
+        <!--<div>-->
+          <!--<span><input type="checkbox" v-model="msg.isDefault" style="margin-right: 5px;">设为默认</span>-->
+        <!--</div>-->
+        <!--<y-button text='保存'-->
+                  <!--class="btn"-->
+                  <!--:classStyle="btnHighlight?'main-btn':'disabled-btn'"-->
+                  <!--@btnClick="save({addressId:msg.addressId,userName:msg.userName,tel:msg.tel,streetName:msg.streetName,isDefault:msg.isDefault})">-->
+        <!--</y-button>-->
+      <!--</div>-->
+    <!--</y-popup>-->
   </div>
 </template>
 <script>
@@ -80,36 +100,71 @@
       }
     },
     methods: {
+      // 获取列表
       _addressList () {
         addressList().then(res => {
-          let data = res.result
-          if (data.length) {
-            this.addList = res.result
-            this.addressId = res.result[0].addressId || '1'
-          } else {
-            this.addList = []
+          if(res.code === 0) {
+            let data = res.data
+            if (data.length) {
+              this.addList = res.data
+              this.addressId = res.data[0].addressId || '1'
+            } else {
+              this.addList = []
+            }
+          }else{
+            this.$message({
+              message: res.msg,
+              type: 'warning'
+            });
           }
         })
       },
+      // 修改收货地址
       _addressUpdate (params) {
         addressUpdate(params).then(res => {
-          this._addressList()
+          if(res.code === 0) {
+            this.$message({
+              message: '修改地址成功',
+              type: 'success'
+            });
+            this._addressList()
+          }else{
+            this.$message({
+              message: res.msg,
+              type: 'warning'
+            });
+          }
         })
       },
+      //  添加地址
       _addressAdd (params) {
         addressAdd(params).then(res => {
-          this._addressList()
+          if(res.code === 0) {
+            this.$message({
+              message: '添加地址成功',
+              type: 'success'
+            });
+            this._addressList()
+          }else{
+            this.$message({
+              message: '添加失败',
+              type: 'warning'
+            });
+          }
         })
       },
+      // 修改默认地址
       changeDef (item) {
         if (!item.isDefault) {
-          item.isDefault = true
+          item.isDefault = 1
           this._addressUpdate(item)
         }
         return false
       },
-      // 保存
+      // 保存添加地址
       save (p) {
+        p.isDefault=(p.isDefault === true ? 1: 0)
+        console.log(p);
         if (p.addressId) {
           this._addressUpdate(p)
         } else {
@@ -118,13 +173,16 @@
         }
         this.popupOpen = false
       },
-      // 删除
+      // 删除地址
       del (addressId, i) {
         addressDel({addressId}).then(res => {
-          if (res.status === '0') {
+          if (res.code === 0) {
             this.addList.splice(i, 1)
           } else {
-            alert('删除失败')
+            this.$message({
+              message: '删除失败',
+              type: 'warning'
+            });
           }
         })
       },
@@ -146,7 +204,11 @@
           this.msg.isDefault = false
           this.msg.addressId = ''
         }
-      }
+      },
+      // // 添加地址
+      // goFormAddress(p){
+      //
+      // }
     },
     created () {
       this._addressList()
@@ -227,5 +289,9 @@
     height: 50px;
     font-size: 14px;
     line-height: 48px
+  }
+  .form-modify{
+    width:70%;
+    margin:0 auto;
   }
 </style>

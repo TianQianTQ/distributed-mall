@@ -1,5 +1,5 @@
 import http from './public'
-// 电脑列表
+// 商品列表--
 export const getComputer = (params) => {
   return http.fetchGet('/goods/computer', params)
 }
@@ -31,19 +31,19 @@ export const editCheckAll = (params) => {
 export const cartDel = (params) => {
   return http.fetchPost('/users/cartDel', params)
 }
-// 获取用户地址
-export const addressList = (params) => {
-  return http.fetchPost('/users/addressList', params)
+// 获取用户地址--
+export const addressList = () => {
+  return http.fetchGet('/accounts/list-address')
 }
-// 修改收货地址
+// 修改收货地址--
 export const addressUpdate = (params) => {
-  return http.fetchPost('/users/addressUpdate', params)
+  return http.fetchPost('/accounts/update-address', params)
 }
-// 添加收货地址
+// 添加收货地址--
 export const addressAdd = (params) => {
-  return http.fetchPost('/users/addressAdd', params)
+  return http.fetchPost('/accounts/add-address', params)
 }
-// 删除收货地址
+// 删除收货地址--
 export const addressDel = (params) => {
   return http.fetchPost('/users/addressDel', params)
 }

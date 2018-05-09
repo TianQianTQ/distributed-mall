@@ -4,9 +4,10 @@
       <header class="w">
         <div class="w-box">
           <div class="nav-logo">
-            <h1>
-              <router-link to="/" title="旧物志">Smartisan</router-link>
-            </h1>
+              <router-link to="/" title="旧物志">
+                <img src="/static/img/favicon.png">
+                <h1>旧物志</h1>
+              </router-link>
           </div>
           <div class="right-box">
             <div class="nav-list">
@@ -22,10 +23,9 @@
                       <!--头像-->
                       <li class="nav-user-avatar">
                         <div>
-                          <span class="avatar" :style="{backgroundImage:'url('+userInfo.info.avatar+')'}">
-                          </span>
+                          <img :src="userInfo.info.headImage" class="avatar"/>
                         </div>
-                        <p class="name">{{userInfo.info.name}}</p>
+                        <p class="name">{{userInfo.info.username}}</p>
                       </li>
                       <li v-for="(item, i) in navList" :key="i">
                         <router-link :to="item.link">{{item.text}}</router-link>
@@ -111,17 +111,8 @@
                 <li>
                   <router-link to="/">首页</router-link>
                 </li>
-                <li>
-                  <router-link to="/goods">全部商品</router-link>
-                </li>
-                <li>
-                  <router-link to="/goods">全部商品</router-link>
-                </li>
-                <li>
-                  <router-link to="/goods">全部商品</router-link>
-                </li>
-                <li>
-                  <router-link to="/goods">全部商品</router-link>
+                <li v-for="(item,index) in categoryName" :key="index">
+                  <router-link :to="{path:'/goods',query: {item:index}}">{{item}}</router-link>
                 </li>
               </ul>
             </div>
@@ -135,8 +126,8 @@
   import YButton from '/components/YButton'
   import { mapMutations, mapState } from 'vuex'
   import { getCartList, cartDel } from '/api/goods'
-  import { loginOut } from '/api/index'
-  import { setStore, removeStore } from '/utils/storage'
+  import { loginOut, category } from '/api/index'
+  import { setStore, removeStore, getStore } from '/utils/storage'
 
   export default {
     props: {
@@ -168,7 +159,10 @@
         st: false,
         // 头部购物车显示
         cartShow: false,
-        timerCartShow: null // 定时隐藏购物车
+        timerCartShow: null,  // 定时隐藏购物车
+        categoryName: [
+          '全部商品',
+        ],
       }
     },
     computed: {
@@ -190,7 +184,7 @@
           totalNum += (item.productNum)
         })
         return totalNum
-      }
+      },
     },
     methods: {
       ...mapMutations(['ADD_CART', 'INIT_BUYCART', 'ADD_ANIMATION', 'SHOW_CART', 'REDUCE_CART', 'RECORD_USERINFO', 'EDIT_CART']),
@@ -239,8 +233,19 @@
       // 退出登陆
       _loginOut () {
         loginOut().then(res => {
-          removeStore('buyCart')
-          window.location.href = '/'
+          if(res.code ===0) {
+            removeStore('buyCart')
+            this.$message({
+              message: '退出成功',
+              center: true
+            });
+            window.location.href = '/'
+          }else{
+            this.$message({
+              message: res.msg,
+              type: 'warning'
+            });
+          }
         })
       }
     },
@@ -255,6 +260,16 @@
       }, 300)
       window.addEventListener('scroll', this.navFixed)
       window.addEventListener('resize', this.navFixed)
+      category().then(res => {
+        if (res.code === 0) {
+          let list = [];
+          res.data.forEach(function(val,index,arr){
+            list[index] = arr[index].categoryName
+          })
+          this.categoryName = this.categoryName.concat(list)
+        }
+        // 重新初始化一次本地数据
+      })
     },
     components: {
       YButton
@@ -360,18 +375,19 @@
     align-items: center;
     height: 100%;
     position: relative;
-    h1 {
-      height: 100%;
-      display: flex;
-      align-items: center;
-      > a {
-        /*background: url(/static/images/global-logo-red@2x.png) no-repeat 50%;*/
-        background:url(/static/img/favicon.png);
-        background-size: cover;
-        display: block;
-        @include wh(50px, 40px);
-        text-indent: -9999px;
-        background-position: 0 0;
+    .nav-logo {
+      h1 {
+        display: inline-block;
+        font-size:25px;
+        font-family: "微软雅黑";
+        color:#cccccc;
+      }
+      img {
+        width: 50px;
+        height: 50px;
+        border-radius: 25%;
+        margin-bottom: -15px;
+        margin-right: 20px;
       }
     }
     .nav-list {

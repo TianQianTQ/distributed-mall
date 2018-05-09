@@ -6,7 +6,7 @@
           <img src="/static/img/logo.png">
           <span>旧物志</span>
         </div>
-        <div v-if="loginPage" class="content">
+        <div v-if="loginPage" class="content" v-loading="loading">
           <ul class="common-form">
             <li class="username border-1p">
               <div class="input">
@@ -27,7 +27,7 @@
             <y-button text="登陆" :classStyle="isLoginOk" @btnClick="login" class="btn"></y-button>
           </div>
         </div>
-        <div class="registered" v-else>
+        <div class="registered" v-else v-loading="loading">
           <h4>注册</h4>
           <div class="content" style="margin-top: 20px;">
             <ul class="common-form">
@@ -83,7 +83,7 @@
   import countDown from '/components/countDown'
   import { userLogin, register, getSmsCode } from '/api/index'
   // import { addCartBatch } from '/api/goods'
-  import { getStore } from '/utils/storage'
+  import { getStore, removeStore } from '/utils/storage'
 
   export default {
     data () {
@@ -103,7 +103,8 @@
           errMsg: '',
           uuid: ''
         },
-        timmer: false   // 获取验证码时间
+        timmer: false,   // 获取验证码时间
+        loading: false   // 加载
       }
     },
     computed: {
@@ -133,17 +134,22 @@
         this.cart = cartArr
       },
       login () {
+        this.loading = true;
         const {mobile, password} = this.ruleForm
         if (!mobile || !password) {
           this.ruleForm.errMsg = '账号或者密码不能为空!'
         } else {
           let params = {mobile, password}
           userLogin(params).then(res => {
-            if (res.code === '0') {
-              this.$router.go(-1)
+            if (res.code === 0) {
+              this.$router.push({
+                name: 'index',
+              })
+              this.$message('登陆成功');
             } else {
               this.ruleForm.errMsg = res.msg
             }
+            this.loading = false;
           })
         }
       },
@@ -156,7 +162,8 @@
         register({username, password, mobile, captcha, uuid}).then(res => {
           // this.registered.errMsg = res.msg
           if (res.code === 0) {
-            console.log('注册成功')
+            this.$message('注册成功')
+            this.loading = false;
             setTimeout(() => {
               this.ruleForm.errMsg = ''
               this.registered.errMsg = ''
@@ -177,7 +184,6 @@
         getSmsCode({params: obj}).then(res => {
           if (res.code === 0) {
             this.registered.uuid = res.data.uuid
-            console.log(this.registered.uuid)
             this.timmer = true
           }
         })

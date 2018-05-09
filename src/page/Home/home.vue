@@ -31,6 +31,7 @@
   import { productHome } from '/api'
   import YShelf from '/components/shelf'
   import mallGoods from '/components/mallGoods'
+  import { setStore, removeStore, getStore } from '/utils/storage'
   export default {
     data () {
       return {
@@ -88,7 +89,14 @@
         // this.floors = home_floors
         // this.hot = home_hot
         this.productCategories = res.data.productCategories
-        console.log(res)
+        let categoryName = [];
+        res.data.productCategories.forEach(function(val,index,arr){
+          categoryName[index] = arr[index].categoryName
+        })
+        // //categoryName = res.data.productCategories[0].categoryName
+        // console.log(categoryName)
+        // setStore('categoryName', categoryName)
+        // console.log(res)
       })
     },
     components: {
