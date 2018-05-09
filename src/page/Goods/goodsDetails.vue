@@ -61,7 +61,7 @@
   </div>
 </template>
 <script>
-  import { productDet,  } from '/api/goods'
+  import { productDet  } from '/api/goods'
   import { mapMutations, mapState } from 'vuex'
   import YShelf from '/components/shelf'
   import BuyNum from '/components/buynum'

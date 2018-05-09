@@ -11,6 +11,9 @@
           </div>
           <div class="right-box">
             <div class="nav-list">
+              <router-link to="/coupon">优惠中心</router-link>
+            </div>
+            <div class="nav-list">
               <router-link to="/goods">全部商品</router-link>
             </div>
             <div class="nav-aside" ref="aside" :class="{fixed: (st && showNav)}">
@@ -90,7 +93,7 @@
                       </div>
                     </div>
                     <div v-show="!totalNum" style="height: 313px;text-align: center" class="cart-con">
-                      <p>你的购物车竟然是空的!</p>
+                      <p>你的购物车是空的!</p>
                     </div>
                   </div>
                 </div>
@@ -102,7 +105,7 @@
         </div>
       </header>
 
-        <!--底部导航-->
+        <!--顶部导航-->
         <div class="nav-sub" v-show="showNav" :class="{fixed: st}">
           <div class="nav-sub-bg"></div>
           <div class="nav-sub-wrapper" :class="{fixed:st}">
@@ -111,7 +114,7 @@
                 <li class="nav-list-sub">
                   <router-link to="/">首页</router-link>
                 </li>
-                <li v-for="(item,index) in categoryName" :key="index">
+                <li v-for="(item,index) in categoryName" :key="index" class="nav-list-sub">
                   <router-link :to="{path:'/goods',query: {item:item.productCategoryId}}">{{item.categoryName}}</router-link>
                 </li>
               </ul>
@@ -397,25 +400,21 @@
         padding: 0 25px;
       }
       a:hover {
-        color: #fff;
-      }
-      a:active {
-        color: #fff;
-        font-size: 15px;
+        color: #6b95ea;
       }
     }
     .nav-list-sub{
       a{
-        color: #c8c8c8!important;
+        color: #c8c8c8;
         display: block;
         font-size: 14px;
         padding: 0 25px;
       }
       a:hover {
-        color: #fff;
+        color: #6b95ea;
       }
       a:active {
-        color: #fff;
+        color: #6b95ea;
         font-size: 15px;
       }
     }

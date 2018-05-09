@@ -50,7 +50,7 @@
           sort: ''
         },
         loading: false,
-        nextPages: true,   // 最大页限制
+        hasNextPag: true,   // 最大页限制
         productCategoryId: utils.getItem()
       }
     },
@@ -67,7 +67,8 @@
         }
         getProductsList(params).then(res => {
           if(res.code === 0 ) {
-            this.nextPages = res.data.hasNextPage
+            this.hasNextPag = res.data.hasNextPage
+            console.log(res.data.hasNextPage);
             let data = res.data.list
             // this.pages = res.data.pages
             // if (res.data.list.length !== 0) {
@@ -126,31 +127,37 @@
       // 加载更多
       loadMore () {
         this.busy = true
-        this.timer = setTimeout(() => {
-          // const page = this.params.page++
-          // if(page > this.pages){
-          //   return
-          // }
-          console.log('dff'+this.nextPages);
-          if(this.nextPages){
+        if(this.hasNextPage){
+          this.timer = setTimeout(() => {
+            this.params.page++
             this._getProductsList(true)
-          }else{
-            // this.busy = false
-          }
-          // conosle.log(page);
-
-        }, 1000)
+          },1000)
+        }
+        // this.timer = setTimeout(() => {
+        //   // const page = this.params.page++
+        //   // if(page > this.pages){
+        //   //   return
+        //   // }
+        //   console.log(this.hasNextPage);
+        //   if(this.hasNextPage){
+        //     this._getProductsList(true)
+        //   }else{
+        //     // this.busy = false
+        //   }
+        //   // conosle.log(page);
+        //
+        // }, 1000)
       }
     },
     created () {
        this._getProductsList()
-      console.log(this.productCategoryId )
+      // console.log(this.productCategoryId )
     },
     mounted () {
       this.windowHeight = window.innerHeight
       this.windowWidth = window.innerWidth
       // this._getProductsList()
-      console.log('dayin'+this.productCategoryId )
+      // console.log('dayin'+this.productCategoryId )
     },
     watch:{
       "$route": "_getProductsList"

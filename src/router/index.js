@@ -4,6 +4,7 @@ const Index = resolve => require(['/page/index'], resolve)
 const Login = resolve => require(['/page/Login/login'], resolve)
 const Home = resolve => require(['/page/Home/home'], resolve)
 const GoodS = resolve => require(['/page/Goods/goods'], resolve)
+const Coupon = resolve => require(['/page/Coupon/coupon'], resolve)
 const goodsDetails = resolve => require(['/page/Goods/goodsDetails'], resolve)
 const Cart = resolve => require(['/page/Cart/cart'], resolve)
 const order = resolve => require(['/page/Order/order'], resolve)
@@ -28,6 +29,7 @@ export default new Router({
       children: [
         {path: 'home', component: Home},
         {path: 'goods', component: GoodS},
+        {path: 'coupon', component: Coupon},
         {path: 'goodsDetails', name: 'goodsDetails', component: goodsDetails}
       ]
     },

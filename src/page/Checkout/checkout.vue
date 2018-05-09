@@ -279,6 +279,7 @@
         this._addressDel({params:obj},i)
       },
       _productDet (productId) {
+        // 商品详情
         productDet({params: {productId}}).then(res => {
           let item = res.result
           item.checked = '1'

@@ -15,9 +15,12 @@
                  :class="{'defalut-address':item.isDefault}"></a>
             </div>
             <div class="operation">
-              <a href="javascript:;" @click="update(item)">修改</a>
-              <a href="javascript:;" :data-id="item.addressId" @click="del(item,i)">删除</a>
+              <!--<a href="javascript:;" @click="update(item)">修改</a>-->
+              <el-button round @click="update(item)">修改</el-button>
+              <el-button round :data-id="item.addressId" @click="del(item,i)">删除</el-button>
+              <!--<a href="javascript:;" :data-id="item.addressId" @click="del(item,i)">删除</a>-->
             </div>
+
           </div>
         </div>
         <div v-else>
@@ -157,19 +160,34 @@
       },
       // 删除地址
       del (item, i) {
-        let obj={
-          addressId:item.addressId
-        }
-        addressDel({params:obj}).then(res => {
-          if (res.code === 0) {
-            this.addList.splice(i, 1)
-          } else {
-            this.$message({
-              message: '删除失败',
-              type: 'warning'
-            });
+        this.$confirm('将删除该地址, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let obj={
+            addressId:item.addressId
           }
-        })
+          addressDel({params:obj}).then(res => {
+            if (res.code === 0) {
+              this.$message({
+                message: '删除成功',
+                type: 'success'
+              })
+              this.addList.splice(i, 1)
+            } else {
+              this.$message({
+                message: '删除失败',
+                type: 'warning'
+              });
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
       },
       // 修改
       update (item) {
@@ -207,11 +225,13 @@
     align-items: center;
     height: 115px;
     text-align: center;
+    border-bottom:1px solid #CFCFCF;
     .name {
-      width: 106px;
+      width: 100px;
+      margin-left:10px;
     }
     .address-msg {
-      flex: 1;
+      width: 400px;
     }
     .telephone {
       width: 160px;
@@ -224,9 +244,10 @@
       }
     }
     .operation {
-      width: 135px;
+      width: 240px;
       a {
         padding: 10px 5px;
+        text-decoration:none;
       }
     }
     &:hover {
@@ -234,10 +255,6 @@
         display: block;
       }
     }
-  }
-
-  .address-item + .address-item {
-    border-top: 1px solid #CFCFCF;
   }
 
   .defalut-address {
