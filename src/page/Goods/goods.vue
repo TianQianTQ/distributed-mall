@@ -24,7 +24,7 @@
          v-infinite-scroll="loadMore"
          infinite-scroll-disabled="busy"
          infinite-scroll-distance="10">
-         正在加载中。。。
+      <p  v-loading="loading"></p>
     </div>
   </div>
 </template>
@@ -50,7 +50,7 @@
           sort: ''
         },
         loading: false,
-        hasNextPag: true,   // 最大页限制
+        pages: null,   // 最大页限制
         productCategoryId: utils.getItem()
       }
     },
@@ -63,30 +63,13 @@
           minPrice: this.min,
           maxPrice: this.max,
           productCategoryId: this.productCategoryId,
-          pageSize: 2
+          pageSize: 20
         }
         getProductsList(params).then(res => {
           if(res.code === 0 ) {
-            this.hasNextPag = res.data.hasNextPage
-            console.log(res.data.hasNextPage);
+            this.pages = res.data.pages
+            console.log(res.data.pages);
             let data = res.data.list
-            // this.pages = res.data.pages
-            // if (res.data.list.length !== 0) {
-            //   this.loading = false
-            //   let data = res.data.list
-            //   if (flag) {
-            //     // 加载
-            //     this.goods = this.goods.concat(data)
-            //     this.busy = false
-            //   } else {
-            //     // 第一次加载
-            //     this.goods = data
-            //     this.busy = false
-            //   }
-            // } else {
-            //   clearTimeout(this.timer)
-            //   this.busy = true
-            // }
             if(flag){
               console.log('不是第一次请求数据');
               this.goods = this.goods.concat(data)
@@ -94,11 +77,52 @@
                 this.busy = true;
               }else{
                 this.busy = false;
+                this.loading = false
               }
             }else{
               console.log('第一次请求数据');
               this.goods = data
               this.busy = false;
+              this.loading = false
+            }
+          }else{
+            this.$message({
+              message: res.msg,
+              type: 'warning'
+            });
+          }
+        })
+      },
+      // 重置
+      _getList(flag){
+        this.productCategoryId = utils.getItem()
+        this.pages = null
+        let params = {
+          pageNo: this.params.page,
+          sort: this.params.sort,
+          minPrice: this.min,
+          maxPrice: this.max,
+          productCategoryId: this.productCategoryId,
+          pageSize: 20
+        }
+        getProductsList(params).then(res => {
+          if(res.code === 0 ) {
+            this.pages = res.data.pages
+            let data = res.data.list
+            if(flag){
+              console.log('不是第一次请求数据');
+              this.goods = this.goods.concat(data)
+              if(res.data.list.length == 0){
+                this.busy = true;
+              }else{
+                this.busy = false;
+                this.loading = false
+              }
+            }else{
+              console.log('第一次请求数据');
+              this.goods = data
+              this.busy = false;
+              this.loading = false
             }
           }else{
             this.$message({
@@ -127,26 +151,16 @@
       // 加载更多
       loadMore () {
         this.busy = true
-        if(this.hasNextPage){
+        this.loading = true
+        if(this.params.page < this.pages){
           this.timer = setTimeout(() => {
             this.params.page++
             this._getProductsList(true)
           },1000)
+        }else{
+          this.loading = false
+          this.busy = false
         }
-        // this.timer = setTimeout(() => {
-        //   // const page = this.params.page++
-        //   // if(page > this.pages){
-        //   //   return
-        //   // }
-        //   console.log(this.hasNextPage);
-        //   if(this.hasNextPage){
-        //     this._getProductsList(true)
-        //   }else{
-        //     // this.busy = false
-        //   }
-        //   // conosle.log(page);
-        //
-        // }, 1000)
       }
     },
     created () {
@@ -160,7 +174,7 @@
       // console.log('dayin'+this.productCategoryId )
     },
     watch:{
-      "$route": "_getProductsList"
+      "$route": "_getList"
     },
     components: {
       mallGoods,

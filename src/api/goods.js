@@ -47,6 +47,10 @@ export const addressAdd = (params) => {
 export const addressDel = (params) => {
   return http.fetchGet('/accounts/delete-address', params)
 }
+// 收货地址详情
+export const infoAddress = (params) => {
+  return http.fetchGet('/accounts/info-address', params)
+}
 // 支付
 export const payMent = (params) => {
   return http.fetchPost('/users/payMent', params)

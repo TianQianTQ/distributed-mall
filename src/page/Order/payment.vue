@@ -56,7 +56,8 @@
         <div class="name">
           <div class="name-cell ellipsis">
             <a href="javascript:;" title=""
-               target="_blank">{{item.productName}}</a></div>
+               target="_blank">{{item.productName}}</a>
+          </div>
         </div>
         <div class="n-b">
           <div class="subtotal ">
@@ -75,7 +76,8 @@
 <script>
   import YShelf from '/components/shelf'
   import YButton from '/components/YButton'
-  import { addressList, getCartList, payMent, productDet } from '/api/goods'
+  // import { infoAddress, getCartList, payMent, productDet } from '/api/goods'
+  import { infoAddress,  payMent, productDet } from '/api/goods'
   import { mapMutations, mapState } from 'vuex'
   export default {
     data () {
@@ -103,19 +105,17 @@
     },
     methods: {
       _getCartList () {
-        // getCartList().then(res => {
-        //   this.cartList = res.result
-        // })
         this.cartList1 = this.cartList
       },
       _addressList (params) {
-        // addressList(params).then(res => {
-        //   this.addList = res.result
-        // })
-        addressList().then(res => {
+        let param = {
+          params
+        }
+        infoAddress(param).then(res => {
           if(res.code === 0) {
             let data = res.data
-            if (data.length) {
+            console.log(res.data);
+            if (data.address) {
               this.addList = res.data
             } else {
               this.addList = []
@@ -348,6 +348,10 @@
   }
 
   .name-cell {
+    img{
+      width:50px;
+      height: 50px;
+    }
 
   }
 </style>
