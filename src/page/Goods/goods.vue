@@ -97,6 +97,7 @@
       _getList(flag){
         this.productCategoryId = utils.getItem()
         this.pages = null
+        this.goods = null
         let params = {
           pageNo: this.params.page,
           sort: this.params.sort,
