@@ -213,7 +213,9 @@
       navFixed () {
         if (this.$route.path === '/goods' ||
           this.$route.path === '/home' ||
-          this.$route.path === '/goodsDetails') {
+          this.$route.path === '/goodsDetails' ||
+          this.$route.path === '/coupon'
+        ) {
           // 计算是否吸顶
           if (this.showNav) {
             let st = document.documentElement.scrollTop || document.body.scrollTop

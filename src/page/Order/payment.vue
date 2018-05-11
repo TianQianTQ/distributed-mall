@@ -79,10 +79,11 @@
   // import { infoAddress, getCartList, payMent, productDet } from '/api/goods'
   import { infoAddress,  payMent, productDet } from '/api/goods'
   import { mapMutations, mapState } from 'vuex'
+  import {getStore} from '/utils/storage'
   export default {
     data () {
       return {
-        payType: 1,
+        payType: 1,   //  支付方式
         addList: {},
         cartList1: [],
         addressId: 0,
@@ -129,18 +130,29 @@
         })
       },
       paySuc () {
-        payMent({
-          addressId: this.addressId,
-          orderTotal: this.checkPrice,
-          productId: this.productId,
-          productNum: this.num
-        }).then(res => {
-          if (!res.status) {
-            this.$router.push({path: '/order/paysuccess', query: {price: this.checkPrice}})
-          } else {
-            alert('支付失败')
-          }
-        })
+        let params = this.cartList;
+        if(getStore('userId')){
+          params.userId = getStore('userId');
+          params.addressId = this.addressId
+          console.log(params);
+          payMent(params).then(res => {
+
+          })
+        }else{
+          this.$message.error('请求超时，请刷新页面');
+        }
+        // payMent({
+        //   addressId: this.addressId,
+        //   orderTotal: this.checkPrice,
+        //   productId: this.productId,
+        //   productNum: this.num
+        // }).then(res => {
+        //   if (!res.status) {
+        //     this.$router.push({path: '/order/paysuccess', query: {price: this.checkPrice}})
+        //   } else {
+        //     this.$message.error('提交失败');
+        //   }
+        // })
       },
       _productDet (productId) {
         productDet({params: {productId}}).then(res => {

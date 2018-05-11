@@ -64,7 +64,7 @@
                           <a href="javascript:;" :title="item.productName" target="_blank"
                              v-text="item.productName"></a>
                           <ul class="attribute">
-                            <li>白色</li>
+                            <!--<li>白色</li>-->
                           </ul>
                         </div>
                       </div>
@@ -135,7 +135,7 @@
 </template>
 <script>
   // import { getCartList, addressList, addressUpdate, addressAdd, addressDel, productDet } from '/api/goods'
-  import { addressList, addressUpdate, addressAdd, addressDel, productDet } from '/api/goods'
+  import { addressList, addressUpdate, addressAdd, addressDel, productDet, createOrder } from '/api/goods'
   import YShelf from '/components/shelf'
   import YButton from '/components/YButton'
   import YPopup from '/components/popup'
@@ -227,14 +227,39 @@
       // 付款
       payment () {
         // 需要拿到地址id
-        this.$router.push({
-          path: '/order/payment',
-          query: {
-            'addressId': this.addressId,
-            'productId': this.productId,
-            'num': this.num
-          }
-        })
+        let params = this.cartList;
+        if(getStore('userId')){
+          let param = {};
+          param.userId = getStore('userId');
+          param.addressId = this.addressId
+          param.products = params
+          console.log(param);
+          createOrder(param).then( res =>{
+            if(res.code ===0) {
+              this.$message('创建成功');
+              this.$router.push({
+                path: '/order/payment',
+                query: {
+                  'addressId': this.addressId,
+                  'productId': this.productId,
+                  'num': this.num
+                }
+              })
+            }else{
+              this.$message.error('网络超时，请重试');
+            }
+          })
+        }else{
+          this.$message.error('请求超时，请刷新页面');
+        }
+        // this.$router.push({
+        //   path: '/order/payment',
+        //   query: {
+        //     'addressId': this.addressId,
+        //     'productId': this.productId,
+        //     'num': this.num
+        //   }
+        // })
       },
       // 选择地址
       defaultAddress (id) {

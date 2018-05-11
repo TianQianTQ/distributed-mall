@@ -40,21 +40,6 @@ router.beforeEach(function (to, from, next) {
         next('/login')
       }
     }
-    // if (res.code === 0) {
-    //   // 白名单
-    //   if (whiteList.indexOf(to.path) !== -1) {
-    //     next()
-    //   } else {
-    //     next('/login')
-    //   }
-    // } else {
-    //   store.commit('RECORD_USERINFO', {info: res.result})
-    //   //  跳转到
-    //   if (to.path === '/login') {
-    //     next({path: '/'})
-    //   }
-    //   next()
-    // }
   })
 })
 
