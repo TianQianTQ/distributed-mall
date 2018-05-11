@@ -95,6 +95,7 @@
       },
       // 重置
       _getList(flag){
+        flag = null
         this.productCategoryId = utils.getItem()
         this.pages = null
         this.goods = null
@@ -166,7 +167,6 @@
     },
     created () {
        this._getProductsList()
-      // console.log(this.productCategoryId )
     },
     mounted () {
       this.windowHeight = window.innerHeight

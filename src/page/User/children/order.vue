@@ -13,12 +13,12 @@
                 <div class="f-bc">
                   <span class="price">单价</span>
                   <span class="num">数量</span>
-                  <span class="operation">商品操作</span>
+                  <span class="operation">订单操作</span>
                 </div>
               </div>
               <div class="last">
                 <span class="sub-total">实付金额</span>
-                <span class="order-detail"> <a href="javascript:;">查看详情<em class="icon-font"></em></a> </span>
+                <span class="order-detail"> 订单状态 </span>
               </div>
             </div>
             <div class="pr">
@@ -45,7 +45,8 @@
               </div>
               <div class="prod-operation pa" style="right: 0;top: 0;">
                 <div class="total">¥ {{item.orderTotal}}</div>
-                <div class="status"> {{item.orderStatus === '1' ? '已支付' : '已关闭'}}  </div>
+                <!--<div class="status"> {{item.orderStatus === '1' ? '已支付' : '待支付'}}  </div>-->
+                <div class="status"> {{getStatus(item.orderStatus) }} </div>
               </div>
             </div>
           </div>
@@ -70,18 +71,53 @@
       }
     },
     methods: {
+      // 订单状态
+      getStatus(status){
+        switch(status){
+          case 1: return '待支付'
+          case 2: return '待发货'
+          case 3: return '已发货'
+          case 4: return '订单完成'
+        }
+      },
       _orderList () {
         orderList().then(res => {
-          this.orderList = res.result
+          if(res.code ===0 ){
+            this.orderList = res.data
+          }else{
+            this.$message.error(res.msg)
+          }
         })
       },
       _delOrder (orderId, i) {
-        delOrder({orderId}).then(res => {
-          if (!res.status) {
-            this.orderList.splice(i, 1)
-          } else {
-            alert('删除失败')
-          }
+        let params = {
+          orderId:orderId
+        }
+        this.$confirm('确认删除该订单？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then( () => {
+          delOrder({params:params}).then(res => {
+            // if (!res.status) {
+            //   this.orderList.splice(i, 1)
+            // } else {
+            //   alert('删除失败')
+            if (res.code === 0) {
+              this.orderList.splice(i, 1)
+              this.$message({
+                type: 'success',
+                message: '删除成功'
+              });
+            } else {
+              this.$message(res.msg);
+            }
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消操作'
+            });
+          });
         })
       }
     },
