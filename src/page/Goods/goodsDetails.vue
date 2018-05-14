@@ -23,18 +23,18 @@
         <div class="sku-custom-title">
           <h4>{{product.productName}}</h4>
           <h6>
-            <span>{{product.sub_title}}</span>
+            <span>{{product.title}}</span>
             <span class="price">
-              <em>¥</em><i>{{product.salePrice}}</i></span>
+              <em>¥</em><i>{{product.price}}</i></span>
           </h6>
         </div>
         <div class="num">
           <span class="params-name">数量</span>
-          <buy-num @edit-num="editNum" :limit="Number(product.limit_num)"></buy-num>
+          <buy-num @edit-num="editNum" :limit="Number(product.stock)"></buy-num>
         </div>
         <div class="buy">
           <y-button text="加入购物车"
-                    @btnClick="addCart(product.productId,product.salePrice,product.productName,product.productImageBig)"
+                    @btnClick="addCart(product.productId,product.price,product.productName,product.url,product.stock)"
                     classStyle="main-btn"
                     style="width: 145px;height: 50px;line-height: 48px"></y-button>
           <y-button text="现在购买"
@@ -82,34 +82,24 @@
     methods: {
       ...mapMutations(['ADD_CART', 'ADD_ANIMATION', 'SHOW_CART']),
       _productDet (productId) {
-        productDet({params: {productId}}).then(res => {
-          let result = res.result
-          this.product = result
-          this.productMsg = result.productMsg || ''
-          this.small = result.productImageSmall
-          this.big = this.small[0]
+        productDet({params: {productId:productId}}).then(res => {
+          if(res.code === 0){
+            this.product = res.data
+            this.big = res.data.url
+          }else{
+            this.$message.error(res.msg);
+          }
         })
       },
-      addCart (id, price, name, img) {
+      addCart (id, price, name, img, stock) {
         if (!this.showMoveImg) {     // 动画是否在运动
-          // if (this.login) { // 登录了 直接存在用户名下
-          //   addCart({productId: id, productNum: this.productNum}).then(res => {
-          //     // 并不重新请求数据
-          //     this.ADD_CART({
-          //       productId: id,
-          //       productPrice: price,
-          //       productName: name,
-          //       productImg: img,
-          //       productNum: this.productNum
-          //     })
-          //   })
-          // } else { // 未登录 vuex
             this.ADD_CART({
               productId: id,
               productPrice: price,
               productName: name,
               productImg: img,
-              productNum: this.productNum
+              productNum: this.productNum,
+              productStock: stock
             })
           // }
           // 加入购物车动画

@@ -54,7 +54,7 @@
                                    display: flex;
                                    align-items: center;
                                    justify-content: center;"
-                                 :limit="5"
+                                 :limit="item.productStock? item.productStock:10"
                                  @edit-num="EditNum"
                         >
                         </buy-num>
@@ -177,6 +177,7 @@
       // 全选
       editCheckAll () {
         let checkAll = !this.checkAllFlag
+        console.log(this.cartList);
           this.EDIT_CART({checked: checkAll})
       },
       // 修改购物车

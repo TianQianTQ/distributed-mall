@@ -223,8 +223,9 @@
           }
           // 计算小圆当前位置
           let num = this.$refs.num
-          const {left, top} = num.getBoundingClientRect()
-          this.ADD_ANIMATION({cartPositionL: left, cartPositionT: top})
+          // console.log(num);
+          // const {left, top} = num.getBoundingClientRect()
+          // this.ADD_ANIMATION({cartPositionL: left, cartPositionT: top})
         }
       },
       // 退出登陆

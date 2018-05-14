@@ -64,6 +64,7 @@
 <script>
   import { orderList, delOrder } from '/api/goods'
   import YShelf from '/components/shelf'
+  import * as utils from '/utils/utils';
   export default {
     data () {
       return {
@@ -83,7 +84,12 @@
       _orderList () {
         orderList().then(res => {
           if(res.code ===0 ){
-            this.orderList = res.data
+            let data = res.data
+            this.pageTotal = res.data.total
+            this.orderList = data
+            data = data.map(function(item,index,input){
+              item.createDate = utils.timestampToTime(item.createDate);
+            })
           }else{
             this.$message.error(res.msg)
           }
@@ -99,10 +105,6 @@
           type: 'warning'
         }).then( () => {
           delOrder({params:params}).then(res => {
-            // if (!res.status) {
-            //   this.orderList.splice(i, 1)
-            // } else {
-            //   alert('删除失败')
             if (res.code === 0) {
               this.orderList.splice(i, 1)
               this.$message({

@@ -18,14 +18,15 @@ export default {
     }
   },
   // 加入购物车
-  [ADD_CART] (state, {productId, productPrice, productName, productImg, productNum = 1}) {
+  [ADD_CART] (state, {productId, productPrice, productName, productImg, productNum = 1, productStock}) {
     let cart = state.cartList // 购物车
     let falg = true
     let goods = {
       productId,
       productPrice,
       productName,
-      productImg
+      productImg,
+      productStock
     }
     if (cart.length) {        // 有内容
       cart.forEach(item => {

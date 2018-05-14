@@ -8,6 +8,48 @@
           <p class="payment-detail">我们将在您完成支付后的 72 小时内发货</p></div>
         <!--支付方式-->
         <div class="pay-type">
+          <div class="p-title">商品信息</div>
+          <div class="confirm-table-title">
+            <span class="name">商品信息</span>
+            <div>
+              <span class="subtotal">小计</span>
+              <span class="num">数量</span>
+              <span class="price">单价</span>
+            </div>
+          </div>
+          <!--商品-->
+          <div class="confirm-goods-table">
+            <div class="cart-items" v-for="(item,i) in cartList1" :key="i" v-if="item.checked === '1'">
+              <div class="name">
+                <div class="name-cell ellipsis">
+                  <a >{{item.productName}}</a>
+                  <p><img :src="item.productImg"></p>
+                </div>
+              </div>
+              <div class="n-b">
+                <div class="subtotal ">
+                  <div class="subtotal-cell"> ¥ {{item.productPrice * item.productNum}}<br></div>
+                </div>
+                <div class="goods-num ">{{item.productNum}}</div>
+                <div class="price ">¥ {{item.productPrice}}</div>
+              </div>
+            </div>
+          </div >
+          <div class="confirm-coupon">
+            是否使用优惠券
+            <el-checkbox v-model="checked" @change="couponSwitch" true-label="checked" false-label="nochecked">
+
+            </el-checkbox>
+            <div v-if="useCoupon">
+              使用-根据应付金额判断可以使用的优惠券
+            </div>
+          </div>
+          <!--合计-->
+          <div class="order-discount-line">
+            <p> 商品总计： <span>¥ {{checkPrice}}</span></p>
+            <p> 优惠减免： <span>¥ {{checkPrice}}</span></p>
+            <p> 运费： <span>+ ¥ 0.00</span></p></div>
+          <!--支付方式-->
           <div class="p-title">支付方式</div>
           <div class="pay-item">
             <div :class="{active:payType==1}" @click="payType=1"><img src="/static/images/alipay@2x.png" alt=""></div>
@@ -42,35 +84,7 @@
         <p class="info-detail">联系电话：{{addList.mobile}}</p>
         <p class="info-detail">详细地址：{{addList.address}}</p></div>
     </div>
-    <div class="confirm-table-title">
-      <span class="name">商品信息</span>
-      <div>
-        <span class="subtotal">小计</span>
-        <span class="num">数量</span>
-        <span class="price">单价</span>
-      </div>
-    </div>
-    <!--商品-->
-    <div class="confirm-goods-table">
-      <div class="cart-items" v-for="(item,i) in cartList1" :key="i" v-if="item.checked === '1'">
-        <div class="name">
-          <div class="name-cell ellipsis">
-            <a href="javascript:;" title=""
-               target="_blank">{{item.productName}}</a>
-          </div>
-        </div>
-        <div class="n-b">
-          <div class="subtotal ">
-            <div class="subtotal-cell"> ¥ {{item.productPrice * item.productNum}}<br></div>
-          </div>
-          <div class="goods-num ">{{item.productNum}}</div>
-          <div class="price ">¥ {{item.productPrice}}</div>
-        </div>
-      </div>
-    </div>
-    <!--合计-->
-    <div class="order-discount-line"><p> 商品总计： <span>¥ {{checkPrice}}</span></p>
-      <p> 运费： <span>+ ¥ 0.00</span></p></div>
+
   </div>
 </template>
 <script>
@@ -83,6 +97,8 @@
   export default {
     data () {
       return {
+        checked:false,
+        useCoupon:false,
         payType: 1,   //  支付方式
         addList: {},
         cartList1: [],
@@ -105,6 +121,23 @@
       }
     },
     methods: {
+      // 选择优惠券
+      couponSwitch(){
+        // console.log(this.checked)
+        if(this.checked =='checked'){
+          this.$message('使用')
+          this.useCoupon = true
+        }else{
+          this.$message.error('不使用');
+          this.useCoupon = false
+        }
+        // if(this.checked = true){
+        //   this.$message('使用');
+        //   this.checked = false
+        // }else{
+        //   this.$message.error('不使用');
+        // }
+      },
       _getCartList () {
         this.cartList1 = this.cartList
       },
@@ -115,7 +148,7 @@
         infoAddress(param).then(res => {
           if(res.code === 0) {
             let data = res.data
-            console.log(res.data);
+            // console.log(res.data);
             if (data.address) {
               this.addList = res.data
             } else {
@@ -130,29 +163,35 @@
         })
       },
       paySuc () {
-        let params = this.cartList;
-        if(getStore('userId')){
-          params.userId = getStore('userId');
-          params.addressId = this.addressId
-          console.log(params);
-          payMent(params).then(res => {
-
-          })
-        }else{
-          this.$message.error('请求超时，请刷新页面');
+        let orderId = getStore('orderId');
+        if (orderId) {
+          let params = {
+            orderId: orderId
+          }
+          payMent({params: params}).then( res => {
+            const div = document.createElement('div');
+            div.innerHTML = res;
+            document.body.appendChild(div);
+            document.forms.punchout_form.submit();
+           // this.$router.push({path: '/order/paysuccess', query: {price: this.checkPrice}})
+          }
+        )
+          // .then(res => {
+          //     // if(res.code ===0){
+          //     //
+          //     // }else{
+          //     //   this.$message(res.msg);
+          //     // }
+          //     // if (!res.status) {
+          //     //   this.$router.push({path: '/order/paysuccess', query: {price: this.checkPrice}})
+          //     // } else {
+          //     //   this.$message.error('提交失败');
+          //     // }
+          //   })
+          // }else{
+          //   this.$message('请刷新页面重试');
+          // }
         }
-        // payMent({
-        //   addressId: this.addressId,
-        //   orderTotal: this.checkPrice,
-        //   productId: this.productId,
-        //   productNum: this.num
-        // }).then(res => {
-        //   if (!res.status) {
-        //     this.$router.push({path: '/order/paysuccess', query: {price: this.checkPrice}})
-        //   } else {
-        //     this.$message.error('提交失败');
-        //   }
-        // })
       },
       _productDet (productId) {
         productDet({params: {productId}}).then(res => {
@@ -357,13 +396,22 @@
 
   .name {
     width: 40%;
+    margin-left:30px;
   }
 
   .name-cell {
-    img{
-      width:50px;
-      height: 50px;
+    p{
+      display:inline-block;
+      img{
+        width:50px;
+        height: 50px;
+        margin-left:30px;
+      }
     }
-
+  }
+  .confirm-coupon{
+    border-top: 1px solid #D5D5D5;
+    margin-top:20px;
+    padding:25px 30px 53px;
   }
 </style>

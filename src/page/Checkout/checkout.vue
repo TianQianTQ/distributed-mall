@@ -236,7 +236,9 @@
           console.log(param);
           createOrder(param).then( res =>{
             if(res.code ===0) {
+              console.log(res);
               this.$message('创建成功');
+              setStore('orderId',res.data.orderId);
               this.$router.push({
                 path: '/order/payment',
                 query: {
