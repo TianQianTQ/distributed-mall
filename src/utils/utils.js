@@ -19,4 +19,12 @@ export function timestampToTime(timestamp) {
   let s = date.getSeconds();
   return Y+M+D+h+m+s;
 }
+export function getUrlParam1(name) {
+  const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i');
+  const r = window.location.search.substr(1).match(reg);
+  if (r != null) {
+    return decodeURIComponent(r[2]);
+  }
+  return null;
+}
 

@@ -73,3 +73,9 @@ export const productDet = (params) => {
 export const delOrder = (params) => {
   return http.fetchGet('/orders/delete', params)
 }
+
+// 更新订单状态
+
+export const ordersUpdate = (params) => {
+  return http.fetchGet('/orders/update', params)
+}

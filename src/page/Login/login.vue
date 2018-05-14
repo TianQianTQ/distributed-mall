@@ -147,7 +147,8 @@
               })
               this.$message('登陆成功');
             } else {
-              this.ruleForm.errMsg = res.msg
+              this.$message(res.msg);
+
             }
             this.loading = false;
           })
