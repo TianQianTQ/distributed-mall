@@ -22,7 +22,7 @@
 <script>
   import YShelf from '/components/shelf'
   import YButton from '/components/YButton'
-  import {getUrlParam1} from '/utils/utils'
+  import {GetQueryString} from '/utils/utils'
   import {ordersUpdate} from '/api/goods'
   export default {
     data () {
@@ -35,7 +35,7 @@
       YButton
     },
     created(){
-      let orderId = getUrlParam1('out_trade_no');
+      let orderId = GetQueryString('out_trade_no');
       console.log(orderId);
       let params = {
         orderId:orderId,
