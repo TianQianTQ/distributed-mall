@@ -79,3 +79,19 @@ export const delOrder = (params) => {
 export const ordersUpdate = (params) => {
   return http.fetchGet('/orders/update', params)
 }
+
+// 优惠券列表
+export const couponList = (params) => {
+  return http.fetchGet('coupon-template/list', params)
+}
+
+// 领取优惠券
+export const getCoupon = (params) => {
+  console.log(params.params.templateId)
+  return http.fetchGet('coupon/'+params.params.templateId, params)
+}
+// 用户优惠券列表
+
+export const userCoupon = (params) => {
+  return http.fetchGet('user/'+params.params.userId)
+}

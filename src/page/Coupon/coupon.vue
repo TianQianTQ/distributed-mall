@@ -2,22 +2,35 @@
   <div class="coupon-main">
     <capsile  v-for="(item,index) in items" :key="item.id" class="coupon-card">
       <div slot ="couponId" class="coupon-id">
-        <p>优惠券id:{{item.couponId}}</p>
+        <p>优惠券id:{{item.templateId}}</p>
       </div>
       <div slot="icon" class="coupon-money">
-        <i class="iconfont t-jiage1"></i>
-        <p>{{item.money}}</p>
+        <!--折扣券-->
+        <div v-if="item.type===1" class="coupon-card-type">
+          <i class="iconfont t-dazhe"></i>
+          <p>{{item.percentOff}}</p>
+        </div>
+        <!--满减券-->
+        <div v-else-if="item.type===2" class="coupon-card-type">
+          <i class="iconfont t-jiage"></i>
+          <p>{{item.amount}}</p>
+        </div>
+        <!--无条件减免券-->
+        <div v-else class="coupon-card-type">
+          <i class="iconfont t-jian"></i>
+          <p>{{item.amount}}</p>
+        </div>
       </div>
       <div slot = 'text' class="coupon-text">
-        <p>{{item.text}}</p>
-        <p class="coupon-time">有效期：{{item.time}}</p>
+        <p>{{item.description}}</p>
+        <p class="coupon-time">有效期：{{item.startTime}}--{{item.endTime}}</p>
       </div>
       <div slot = 'available' class="coupon-type">
-        <p>限品类：{{item.type}}</p>
-        <p v-if="!isReceive" class="coupon-button" @click="toGet(item.couponId)"> 立即领取</p>
-        <p v-else class="coupon-received">
-          <i class="iconfont t-yilingqu"></i>
-        </p>
+        <p>限品类：不限</p>
+        <p  class="coupon-button" @click="toGet(item.templateId,item.isReceive)"> 立即领取</p>
+        <!--<p v-else class="coupon-received">-->
+          <!--<i class="iconfont t-yilingqu"></i>-->
+        <!--</p>-->
       </div>
 
     </capsile>
@@ -26,7 +39,9 @@
 
 <script>
   import capsile from '/components/capsule.vue'
-  import { productDet  } from '/api/goods'
+  import { couponList,getCoupon  } from '/api/goods'
+  import { getStore} from '/utils/storage'
+
     export default {
         components:{
           capsile
@@ -34,40 +49,60 @@
         name: "coupon",
         data(){
           return{
-            isReceive: true,
-            items:[
-              {
-                couponId: 1000,
-                money: 24.00,
-                text: '无门槛红包',
-                time: '2018.03.22-2018.06.30',
-                type: '不限',
-                number: 254,
-                background: 'gren',
-                id: 1
-              }
-            ]
+            isReceive: false,
+            items:[]
           }
         },
-      methods:{
-        toGet(couponId){
-          productDet({params: {couponId}}).then(res => {
+        created(){
+          couponList().then( res => {
             if(res.code === 0){
-              this.isReceive = true
-              this.$message({
-                message: '领取成功',
-                type: 'success'
-              });
+              this.items = res.data
             }else{
-              this.$message.error(res.msg);
+              this.$message(res.msg)
             }
           })
+        },
+        methods:{
+          toGet(templateId,isReceive){
+            let params = {
+              userId:getStore('userId'),
+              templateId:templateId
+            }
+            getCoupon({params: params}).then(res => {
+              if(res.code === 0){
+                if(!isReceive){
+                  isReceive = true
+                }
+                this.$message({
+                  message: '领取成功',
+                  type: 'success'
+                });
+
+              }else{
+                this.$message.error(res.data);
+              }
+            })
+          }
         }
-      }
     }
 </script>
 
 <style scoped>
+  .coupon-card-type{
+
+  }
+  .coupon-card-type i{
+    display:inline-block;
+    margin-left:50px;
+    font-size:30px;
+    color:#c81623;
+  }
+  .coupon-card-type p{
+    display:inline-block;
+    margin-left:30px;
+    font-size:50px;
+    font-weight:bold;
+  }
   .coupon-card{
 
   }
@@ -105,12 +140,6 @@
     font-family: "Adobe Arabic";
     color:#999999;
     border-bottom:1px dashed #BEBEBE;
-  }
-  .coupon-money p{
-    display:inline-block;
-    margin-left:10px;
-    font-size:50px;
-    font-weight: bold;
   }
   .t-jiage1{
     font-size:25px;

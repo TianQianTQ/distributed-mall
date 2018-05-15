@@ -2,18 +2,18 @@
   <div>
     <y-shelf title="我的优惠">
       <div slot="content">
-        <div v-if="items.length">
+        <div v-if="couponList.length">
           <div v-for="(item,i) in couponList" :key="i">
             <div class="gray-sub-title cart-title">
               <div class="first">
                 <div>
-                  <span class="date" >{{item.data}} </span>
+                  <!--<span class="date" >{{item.data}} </span>-->
                   <span class="order-id"> 优惠券编号： <a href="javascript:;">{{item.couponId}}</a> </span>
                 </div>
                 <div class="f-bc">
-                  <span class="price">优惠金额</span>
+                  <span class="price">类型</span>
+                  <span class="price">优惠</span>
                   <span class="price">使用情况</span>
-                  <span class="operation">优惠券操作</span>
                 </div>
               </div>
               <div class="last">
@@ -21,17 +21,16 @@
               </div>
             </div>
             <div class="pr">
-              <div class="cart" v-for="(item,j) in couponList" :key="j">
-                <div class="cart-l" :class="{bt:j>0}">
+              <div class="cart" >
+                <div class="cart-l" :class="{bt:i>0}">
                   <div class="car-l-l">
-                    <div class="img-box">{{item.message}}</div>
+                    <div class="img-box">{{item.description}}</div>
                   </div>
                   <div class="cart-l-r">
-                    <div class="ellipsis">￥{{item.price}}</div>
-                    <div v-text="item.receive?'已使用':'未使用'"></div>
-                    <div class="type"><a @click="" href="javascript:;" v-if="j<1"
-                                         class="del-order">删除此优惠券</a>
-                    </div>
+                    <div class="ellipsis">{{item.type}}</div>
+                    <div class="ellipsis" v-if="item.amount">￥{{item.amount}}</div>
+                    <div class="ellipsis" v-else>{{item.percentOff}}%</div>
+                    <div v-text="item.status===2 ? '已使用':'未使用'"></div>
                   </div>
                 </div>
                 <div class="cart-r">
@@ -40,7 +39,7 @@
                 </div>
                 <div class="prod-operation pa" style="right: 0;top: 0;">
                   <!--<div class="status"> {{item.orderStatus === '1' ? '已支付' : '待支付'}}  </div>-->
-                  <div class="status"> {{item.state}}</div>
+                  <div class="status"> {{item.startTime}}至{{item.endTime}}</div>
                 </div>
               </div>
             </div>
@@ -48,7 +47,7 @@
         </div>
         <div v-else>
           <div style="padding: 100px 0;text-align: center">
-            你还未创建过订单
+            你还未领取优惠券
           </div>
         </div>
       </div>
@@ -58,6 +57,8 @@
 <script>
   import YShelf from '/components/shelf'
   import capsile from '/components/capsule.vue'
+  import { getStore} from '/utils/storage'
+  import {userCoupon} from '/api/goods'
   export default {
     components: {
       YShelf,
@@ -65,29 +66,18 @@
     },
     data(){
       return{
-        couponList:[
-          {
-            data:'2018.03.22 ', // 领取时间
-            couponId:1000,
-            message:'满200减100',
-            price:30,
-            receive:false,
-            state:'2018.03.22-2018.06.30'
-        }
-        ],
-        items:[
-          {
-            couponId: 1000,
-            money: 24.00,
-            text: '无门槛红包',
-            time: '2018.03.22-2018.06.30',
-            type: '不限',
-            number: 254,
-            background: 'gren',
-            id: 1
-          }
-        ]
+        couponList:[],
       }
+    },
+    created(){
+      let params = {
+        userId:getStore('userId')
+      }
+      userCoupon({params:params}).then( res => {
+        if(res.code ===0){
+          this.couponList = res.data
+        }
+      })
     },
   }
 </script>
@@ -175,7 +165,8 @@
     width: 220px;
   }
   .img-box {
-    border: 1px solid #EBEBEB;
+    /*border: 1px solid #EBEBEB;*/
+    /*border-radius: 1px;*/
   }
   img {
     display: block;

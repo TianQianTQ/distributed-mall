@@ -23,7 +23,7 @@ module.exports = {
   },
   dev: {
     env: require('./dev.env'),
-    port: 80,
+    port: 8088,
     autoOpenBrowser: true,
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
@@ -44,6 +44,15 @@ module.exports = {
       },
       '/orders/*':{
         target:'http://xiyoubuy.cn:8901/api-orders',
+      },
+      '/coupon-template/*':{
+        target:'http://xiyoubuy.cn:8901/api-coupon',
+      },
+      '/coupon/*':{
+        target:'http://xiyoubuy.cn:8901/api-coupon',
+      },
+      '/user/*':{
+        target:'http://xiyoubuy.cn:8901/api-coupon/coupon/v2',
       },
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
