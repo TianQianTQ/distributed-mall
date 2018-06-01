@@ -5,19 +5,11 @@
            @mouseover="bgOver($refs.bg)"
            @mousemove="bgMove($refs.bg,$event)"
            @mouseout="bgOut($refs.bg)">
-        <span class="img a"></span>
+        <span class="img a" @click="toSpike"></span>
         <span class="text b">以傲慢与偏执<br/>回敬傲慢与偏见</span>
       </div>
     </div>
 
-
-    <!--<section class="w mt30 clearfix">-->
-      <!--<y-shelf title="热门商品">-->
-        <!--<div slot="content" class="hot">-->
-          <!--<mall-goods :msg="item" v-for="(item,i) in hot" :key="i"></mall-goods>-->
-        <!--</div>-->
-      <!--</y-shelf>-->
-    <!--</section>-->
     <section class="w mt30 clearfix" v-for="(item,i) in productCategories" :key="i">
       <y-shelf :title="item.categoryName">
         <div slot="content" class="floors">
@@ -48,6 +40,11 @@
       }
     },
     methods: {
+      toSpike(){
+        console.log(1);
+        this.$router.push({path: '/spike' })
+        console.log('跳转');
+      },
       // 鼠标移入
       bgOver (event) {
         // 获取移入时的位置
